@@ -1,0 +1,16 @@
+----------------
+- Spitcast API
+----------------
+https://api.spitcast.com/api/spot
+https://api.spitcast.com/api/spot_forecast/%d/%d/%d/%d
+
+
+---------------------------------------
+- APIs for Custom Forecast Aggregator
+---------------------------------------
+- Tides: NOAA CO-OPS (JSON)
+- Bathymetry: GEBCO (Raster)
+- Weather: NOAA National Weather Service
+https://api.weather.gov/points/{latitude},{longitude}
+
+- Water Temp: NOAA NDBC Buoy Data (JSON)
