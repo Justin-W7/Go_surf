@@ -12,7 +12,7 @@
 *.test
 
 # Project Files to NOT inlude in repo
-credentials.go
+credentials/credentials.go
 
 # Code coverage profiles and other test artifacts
 *.out
