@@ -1,5 +1,6 @@
 package models
 
+// SurfSpot struct for Spicast API parsing.
 type SurfSpot struct {
 	SpotID        int       `json:"_id"`
 	SpotName      string    `json:"spot_name"`

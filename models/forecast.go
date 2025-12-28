@@ -3,20 +3,22 @@ package models
 
 // SurfForecast struct and components
 type SurfForecast struct {
-	SpotID    int         `json:"spot_id"`
-	SpotName  string      ""
-	ID        string      `json:"_id"`
-	DateGmt   DateInfo    `json:"date_gmt"`
-	DateLocal DateInfo    `json:"date_local"`
-	IsDom     bool        `json:"is_dom"`
-	Shape     float64     `json:"shape"`
-	ShapeList []ShapeItem `json:"shape_list"`
-	Size      float64     `json:"size"`
-	SizeFt    float64     `json:"size_ft"`
-	SizeList  []SizeItem  `json:"size_list"`
-	Timestamp int         `json:"timestamp"`
-	Warnings  []string    `json:"warnings"`
+	SpotID      int         `json:"spot_id"`
+	SpotName    string      ""
+	ID          string      `json:"_id"`
+	DateGmt     DateInfo    `json:"date_gmt"`
+	DateLocal   DateInfo    `json:"date_local"`
+	IsDom       bool        `json:"is_dom"`
+	Shape       float64     `json:"shape"`
+	ShapeList   []ShapeItem `json:"shape_list"`
+	Size        float64     `json:"size"`
+	SizeFt      float64     `json:"size_ft"`
+	SizeList    []SizeItem  `json:"size_list"`
+	Timestamp   int         `json:"timestamp"`
+	Warnings    []string    `json:"warnings"`
+	Coordinates []float64
 }
+
 type DateInfo struct {
 	DD int `json:"dd"`
 	HH int `json:"hh"`
@@ -35,7 +37,6 @@ type SizeItem struct {
 	SizeMeters float64 `json:"size_meters"`
 }
 
-
 // SumTodaysForecast struct
 type SumTodaysForecast struct {
 	SpotName      string
@@ -44,13 +45,17 @@ type SumTodaysForecast struct {
 	SwellPeriod   float64
 	SwellSize     float64
 	WaterTemp     int
-	WindDirection string
-	WindSpeed     float64
+	Winds         []SumWind
 	AirTemp       float32
 }
 
+type SumWind struct {
+	Time      string
+	Direction string
+	WindSpeed float64
+}
 
-// WeatherPointsResponse struct and components. 
+// WeatherPointsResponse struct and components.
 type WeatherPointsResponse struct {
 	ID         string     `json:"id"`
 	Type       string     `json:"type"`

@@ -4,10 +4,7 @@ import (
 	"time"
 )
 
-// -------------------------------------------------
-// -- Weather structs for initial spot api call
-// -------------------------------------------------
-
+// SpotWeather structs for initial spot API parsing.
 type SpotWeather struct {
 	Context    []any           `json:"@context"`
 	ID         string          `json:"id"`
@@ -61,10 +58,7 @@ type Bearing struct {
 	Value    float64 `json:"value"`
 }
 
-//--------------------------------------------------------------------
-// Weather Forecast Structs WeatherForecast
-//--------------------------------------------------------------------
-
+// WeatherForecast structs for weather API parsing.
 type WeatherForecast struct {
 	Context    []any              `json:"@context"`
 	Type       string             `json:"type"`
@@ -109,10 +103,7 @@ type ForecastPeriod struct {
 	DetailedForecast           string     `json:"detailedForecast"`
 }
 
-//--------------------------------------------------------------------
-//-- Weather Forecast Structs ForecastGridData
-//--------------------------------------------------------------------
-
+// ForecastGridData structs for Forecast Grid weather API parsing.
 type ForecastGridData struct {
 	Context    []any          `json:"@context"`
 	ID         string         `json:"id"`
@@ -185,10 +176,7 @@ type GridProperties struct {
 	Pressure GridWeatherParameter `json:"pressure"`
 }
 
-//--------------------------------------------------------------------
-//-- Weather Forecast Structs HourlyWeatherForecast
-//-------------------------------------------------------------------
-
+// HourlyWeatherForecast structs for hourly forecast API parsing.
 type HourlyWeatherForecast struct {
 	Context    []any            `json:"@context"`
 	ID         string           `json:"id"`
