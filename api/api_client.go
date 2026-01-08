@@ -88,7 +88,7 @@ func FetchSpitcastForecast(spots []models.SurfSpot) ([][]byte, error) {
 // Returns:
 //   - []byte: A byte slice containing the raw response body.
 //   - error: An error if the HTTP request fails.
-func FetchWeatherPoint(long float64, lat float64) ([]byte, error) {
+func FetchWeatherPoint(lat float64, long float64) ([]byte, error) {
 	url := fmt.Sprintf(NWSWeatherURL, long, lat)
 	return fetchURL(url)
 }

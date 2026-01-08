@@ -1,4 +1,19 @@
-[X] Need to add Function Comments to help explain how data is being passed around.
-    It is starting to get confusing.
+[X] Need to add Function Comments to help explain how 
+    data is being passed around. It is starting to get confusing.
+
+[ ] Data Flow 1:
+        
+    1. Get data from Spitcast API.
+    2. Parse data into []models.SurfSpot.
+    3. Get weather data for each spot.
+    4. Build todays forecast for each spot. 
+
+[ ] Data Flow 2:
+    1. Get data from Spitacst API
+    2. Parse data into []models.SurfSpot.
+    3. Add spot to data base
+    4. Get weather data for each spot.
+    5. Add weather data to data base.
+    6. Build todays forecast.
 
 

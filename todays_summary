@@ -1,90 +1,82 @@
 [
   {
     "SpotName": "Santa Ana River Jetties",
-    "AvgWaveHeight": 4.4,
-    "Quality": 0.1,
+    "AvgWaveHeight": 1.3,
+    "Quality": 0.6,
     "SwellPeriod": 0,
     "SwellSize": 0,
     "WaterTemp": 0,
-    "WindDirection": "",
-    "WindSpeed": 0,
+    "Winds": null,
     "AirTemp": 0
   },
   {
     "SpotName": "56th Street",
-    "AvgWaveHeight": 4.7,
-    "Quality": 0,
-    "SwellPeriod": 0,
-    "SwellSize": 0,
-    "WaterTemp": 0,
-    "WindDirection": "",
-    "WindSpeed": 0,
-    "AirTemp": 0
-  },
-  {
-    "SpotName": "40th Street",
-    "AvgWaveHeight": 3.4,
-    "Quality": 0,
-    "SwellPeriod": 0,
-    "SwellSize": 0,
-    "WaterTemp": 0,
-    "WindDirection": "",
-    "WindSpeed": 0,
-    "AirTemp": 0
-  },
-  {
-    "SpotName": "36th Street",
-    "AvgWaveHeight": 3.7,
-    "Quality": 0,
-    "SwellPeriod": 0,
-    "SwellSize": 0,
-    "WaterTemp": 0,
-    "WindDirection": "",
-    "WindSpeed": 0,
-    "AirTemp": 0
-  },
-  {
-    "SpotName": "Blackies",
-    "AvgWaveHeight": 3.5,
-    "Quality": 0.2,
-    "SwellPeriod": 0,
-    "SwellSize": 0,
-    "WaterTemp": 0,
-    "WindDirection": "",
-    "WindSpeed": 0,
-    "AirTemp": 0
-  },
-  {
-    "SpotName": "Newport Pier",
-    "AvgWaveHeight": 12.3,
-    "Quality": 1,
-    "SwellPeriod": 0,
-    "SwellSize": 0,
-    "WaterTemp": 0,
-    "WindDirection": "",
-    "WindSpeed": 0,
-    "AirTemp": 0
-  },
-  {
-    "SpotName": "Newport Point",
-    "AvgWaveHeight": 2.4,
+    "AvgWaveHeight": 1.4,
     "Quality": 0.8,
     "SwellPeriod": 0,
     "SwellSize": 0,
     "WaterTemp": 0,
-    "WindDirection": "",
-    "WindSpeed": 0,
+    "Winds": null,
+    "AirTemp": 0
+  },
+  {
+    "SpotName": "40th Street",
+    "AvgWaveHeight": 1.1,
+    "Quality": 0.5,
+    "SwellPeriod": 0,
+    "SwellSize": 0,
+    "WaterTemp": 0,
+    "Winds": null,
+    "AirTemp": 0
+  },
+  {
+    "SpotName": "36th Street",
+    "AvgWaveHeight": 1.2,
+    "Quality": 0.5,
+    "SwellPeriod": 0,
+    "SwellSize": 0,
+    "WaterTemp": 0,
+    "Winds": null,
+    "AirTemp": 0
+  },
+  {
+    "SpotName": "Blackies",
+    "AvgWaveHeight": 1.2,
+    "Quality": 0.5,
+    "SwellPeriod": 0,
+    "SwellSize": 0,
+    "WaterTemp": 0,
+    "Winds": null,
+    "AirTemp": 0
+  },
+  {
+    "SpotName": "Newport Pier",
+    "AvgWaveHeight": 2.8,
+    "Quality": 1,
+    "SwellPeriod": 0,
+    "SwellSize": 0,
+    "WaterTemp": 0,
+    "Winds": null,
+    "AirTemp": 0
+  },
+  {
+    "SpotName": "Newport Point",
+    "AvgWaveHeight": 1.1,
+    "Quality": 0.2,
+    "SwellPeriod": 0,
+    "SwellSize": 0,
+    "WaterTemp": 0,
+    "Winds": null,
     "AirTemp": 0
   },
   {
     "SpotName": "The Wedge",
-    "AvgWaveHeight": 5.3,
-    "Quality": 0.4,
+    "AvgWaveHeight": 1.6,
+    "Quality": 1,
     "SwellPeriod": 0,
     "SwellSize": 0,
     "WaterTemp": 0,
-    "WindDirection": "",
-    "WindSpeed": 0,
+    "Winds": null,
     "AirTemp": 0
   }
 ]

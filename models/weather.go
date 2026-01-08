@@ -122,16 +122,6 @@ type GridTimeValue struct {
 	Value     float64      `json:"value"`
 }
 
-type GridUnitValue struct {
-	UnitCode string  `json:"unitcode"`
-	Value    float64 `json:"value"`
-}
-
-type GridWeatherParameter struct {
-	UOM    string          `json:"uom,omitempty"`
-	Values []GridTimeValue `json:"values"`
-}
-
 type GridProperties struct {
 	ID         string `json:"@id"`
 	Type       string `json:"@type"`
@@ -174,6 +164,16 @@ type GridProperties struct {
 	WindWaveHeight          GridWeatherParameter `json:"windWaveHeight"`
 
 	Pressure GridWeatherParameter `json:"pressure"`
+}
+
+type GridUnitValue struct {
+	UnitCode string  `json:"unitcode"`
+	Value    float64 `json:"value"`
+}
+
+type GridWeatherParameter struct {
+	UOM    string          `json:"uom,omitempty"`
+	Values []GridTimeValue `json:"values"`
 }
 
 // HourlyWeatherForecast structs for hourly forecast API parsing.
