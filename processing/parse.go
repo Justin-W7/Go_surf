@@ -9,6 +9,24 @@ import (
 	"go_surf/models"
 )
 
+// ParseSpotWeather parses raw JSON data into a SpotWeather model.
+//
+// Parameters:
+//   - data: Raw JSON data returned by FetchWeatherPoint().
+//
+// Returns:
+//   - models.SpotWeather: Parsed SpotWeather data.
+//
+// - error: An error if the JSON unmarshalling fails.
+func ParseSpotWeather(data []byte) (models.SpotWeather, error) {
+	var weatherData models.SpotWeather
+	if err := json.Unmarshal(data, &weatherData); err != nil {
+		fmt.Println("Unmarshal error in processing.ParseSpotWeather.", err)
+		return models.SpotWeather{}, err
+	}
+	return weatherData, nil
+}
+
 // ParseSurfSpots parses raw JSON data into a slice of SurfSpot models.
 //
 // Paramters
