@@ -3,20 +3,22 @@ package models
 
 // SurfForecast struct and components
 type SurfForecast struct {
-	SpotID      int         `json:"spot_id"`
-	SpotName    string      ""
-	ID          string      `json:"_id"`
-	DateGmt     DateInfo    `json:"date_gmt"`
-	DateLocal   DateInfo    `json:"date_local"`
-	IsDom       bool        `json:"is_dom"`
-	Shape       float64     `json:"shape"`
-	ShapeList   []ShapeItem `json:"shape_list"`
-	Size        float64     `json:"size"`
-	SizeFt      float64     `json:"size_ft"`
-	SizeList    []SizeItem  `json:"size_list"`
-	Timestamp   int         `json:"timestamp"`
-	Warnings    []string    `json:"warnings"`
-	Coordinates []float64
+	SpotID          int         `json:"spot_id"`
+	SpotName        string      ""
+	ID              string      `json:"_id"`
+	DateGmt         DateInfo    `json:"date_gmt"`
+	DateLocal       DateInfo    `json:"date_local"`
+	IsDom           bool        `json:"is_dom"`
+	Shape           float64     `json:"shape"`
+	ShapeList       []ShapeItem `json:"shape_list"`
+	Size            float64     `json:"size"`
+	SizeFt          float64     `json:"size_ft"`
+	SizeList        []SizeItem  `json:"size_list"`
+	Timestamp       int64       `json:"timestamp"`
+	Warnings        []string    `json:"warnings"`
+	Coordinates     []float64
+	SpotWeather     SpotWeather
+	PeriodForecasts []HourlyPeriods
 }
 
 type DateInfo struct {
@@ -45,7 +47,7 @@ type SumTodaysForecast struct {
 	SwellPeriod   float64
 	SwellSize     float64
 	WaterTemp     int
-	Winds         []SumWind
+	Wind          []SumWind
 	AirTemp       float32
 }
 

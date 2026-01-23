@@ -1,9 +1,5 @@
 package models
 
-import (
-	"time"
-)
-
 // SpotWeather structs for initial spot API parsing.
 type SpotWeather struct {
 	Context    []any           `json:"@context"`
@@ -89,8 +85,8 @@ type QuantValue struct {
 type ForecastPeriod struct {
 	Number                     int        `json:"number"`
 	Name                       string     `json:"name"`
-	StartTime                  time.Time  `json:"startTime"`
-	EndTime                    time.Time  `json:"endTime"`
+	StartTime                  string     `json:"startTime"`
+	EndTime                    string     `json:"endTime"`
 	IsDaytime                  bool       `json:"isDaytime"`
 	Temperature                int        `json:"temperature"`
 	TemperatureUnit            string     `json:"temperatureUnit"`
@@ -185,21 +181,30 @@ type HourlyWeatherForecast struct {
 	Properties HourlyProperties `json:"properties"`
 }
 
+type HourlyGeometry struct {
+	Type        string        `json:"type"`
+	Coordinates [][][]float64 `json:"coordinates"`
+}
+type HourlyProperties struct {
+	Units             string          `json:"units"`
+	ForecastGenerator string          `json:"forecastGenerator"`
+	GeneratedAt       string          `json:"generatedAt"`
+	UpdateTime        string          `json:"updateTime"`
+	ValidTimes        string          `json:"validTimes"`
+	Elevation         HourlyValueUnit `json:"elevation"`
+	Periods           []HourlyPeriods `json:"periods"`
+}
+
 type HourlyValueUnit struct {
 	UnitCode string  `json:"unitCode"`
 	Value    float64 `json:"value"`
 }
 
-type HourlyGeometry struct {
-	Type        string        `json:"type"`
-	Coordinates [][][]float64 `json:"coordinates"`
-}
-
 type HourlyPeriods struct {
 	Number                     int             `json:"number"`
 	Name                       string          `json:"name"`
-	StartTime                  time.Time       `json:"startTime"`
-	EndTime                    time.Time       `json:"endTime"`
+	StartTime                  string          `json:"startTime"`
+	EndTime                    string          `json:"endTime"`
 	IsDayTime                  bool            `json:"isDayTime"`
 	Temperature                int             `json:"temperature"`
 	TemperatureUnit            string          `json:"temperatureUnit"`
@@ -209,14 +214,4 @@ type HourlyPeriods struct {
 	WindDirection              string          `json:"windDirection"`
 	ShortForecast              string          `json:"shortForecast"`
 	DetailedForecast           string          `json:"detailedForecast"`
-}
-
-type HourlyProperties struct {
-	Units             string          `json:"units"`
-	ForecastGenerator string          `json:"forecastGenerator"`
-	GeneratedAt       time.Time       `json:"generatedAt"`
-	UpdateTime        time.Time       `json:"updateTime"`
-	ValidTimes        string          `json:"validTimes"`
-	Elevation         HourlyValueUnit `json:"elevation"`
-	Periods           []HourlyPeriods `json:"periods"`
 }

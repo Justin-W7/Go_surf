@@ -4,11 +4,13 @@ import (
 	"fmt"
 
 	"go_surf/api"
-	"go_surf/models"
 	"go_surf/processing"
+	"go_surf/utils"
 )
 
 // DataFilterKey is the location keyword used to filter surf spots.
+// We can use a name of a city as this is how the api sorts spots by address.
+// i.e. useing "newport" returns all of the spots in Newport Beach.
 const DataFilterKey = "newport"
 
 func main() {
@@ -27,35 +29,37 @@ func main() {
 	// 3. Filter surf spots based on DataFilterKey
 	filteredSurfSpots := processing.FilterLocations(spotsArr, DataFilterKey)
 
-	// 3.1. Fetch Forecast JSON data for surf spots.
+	// 4. Fetch Forecast JSON data for surf spots.
 	rawForecastData, err := api.FetchSpitcastForecast(filteredSurfSpots)
 	if err != nil {
 		fmt.Println("ERROR: ", err)
 	}
-	// 3.2. Build todays forecast
+
+	// 5. Build todays forecast.
+	// NOTE: spotForecasts is of []models.SurfForecast type.
 	spotForecasts, err := processing.ParseSpotForecast(rawForecastData, filteredSurfSpots)
 	if err != nil {
 		fmt.Println("ERROR: ", err)
 	}
 
-	// 4. Get weather data for each spot.
-	var weatherSpotSlice []models.SpotWeather
-	for _, i := range spotForecasts {
-		// Get api response for weather point and parse into json
-		tempWeatherPoint, _ := api.FetchWeatherPoint(i.Coordinates[0], i.Coordinates[1])
-		tempSpotWeather, _ := processing.ParseSpotWeather(tempWeatherPoint)
+	// NOTE: todaysForecasts represents data for each hour of todays date for each spot.
+	// todaysForecasts is of []models.SurfForecast type.
+	todaysForecasts := processing.ParseTodaysForecasts(spotForecasts)
 
-		weatherSpotSlice = append(weatherSpotSlice, tempSpotWeather)
-	}
+	// append SpotWeather to forecasts.
+	processing.AppendSpotWeather(todaysForecasts)
 
-	// 4.1. Append wind data to each spotForecast
-	for _, i := range weatherSpotSlice {
-		weatherForecastURL := i.Properties.Forecast
-		weatherForecast, _ := api.FetchWeatherForecast(weatherForecastURL)
+	// Append hourly period to each forecast.
+	processing.AppendHourlyWeatherForecasts(todaysForecasts)
 
-	}
+	// sort into am/pm forecasts
+	amForecasts, pmForecasts := processing.SortAMPMForecasts(todaysForecasts)
 
-	// 5. Build todays forecast for each spot.
+	// Build todays summary forecast
+	amTodaysForecasts := processing.SummarizeTodaysForecast(amForecasts)
+	pmTodaysForecasts := processing.SummarizeTodaysForecast(pmForecasts)
 
 	// 6. Write to JSON file.
+	utils.ToJSONFile(amTodaysForecasts, "am_forecasts")
+	utils.ToJSONFile(pmTodaysForecasts, "pm_forecasts")
 }
