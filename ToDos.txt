@@ -1,8 +1,11 @@
-[X] Need to add Function Comments to help explain how 
-    data is being passed around. It is starting to get confusing.
 
-[ ] Data Flow 1:
-        
+2026/01/22
+[ ] Complete functions in summary.go.
+    avgWindSpeed()
+    avgWindDirection()
+
+
+[ ] Data Flow 1:        
     1. Get data from Spitcast API.
     2. Parse data into []models.SurfSpot.
     3. Get weather data for each spot.

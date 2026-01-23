@@ -54,3 +54,9 @@ func SummarizeTodaysForecast(forecast []models.SurfForecast) []models.SumTodaysF
 	}
 	return summary
 }
+
+// NOTE: arguments should be pointers.
+func avgWindSpeed() {}
+
+// NOTE: arguments should be pointers.
+func avgWindDirection() {}
