@@ -4,6 +4,7 @@ package utils
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 )
 
 // ToJSONFile writes any data structure to a JSON file.
@@ -15,7 +16,9 @@ import (
 // Returns:
 //   - error: An error if the file creation or JSON encoding fails.
 func ToJSONFile[T any](data T, filename string) error {
-	file, err := os.Create(filename)
+	path := filepath.Join("test", filename)
+
+	file, err := os.Create(path)
 	if err != nil {
 		panic(err)
 	}

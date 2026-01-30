@@ -1,12 +1,17 @@
 package processing
 
 import (
+	"fmt"
+	"math"
+	"strconv"
+	"strings"
+
 	"go_surf/models"
 	"go_surf/utils"
 )
 
 // SummarizeTodaysForecast summarizes surf data for each spot in forecast. Calculates the
-// avg wave height and quality for each spot.
+// averages for the characteristics of each spot.
 //
 // Parameters:
 //   - forecast: Slice of SurfForecast data for multiple spots.
@@ -14,49 +19,119 @@ import (
 // Returns:
 //   - []models.SumTodaysForecast: A slice summarizing data for each unique surf spot.
 func SummarizeTodaysForecast(forecast []models.SurfForecast) []models.SumTodaysForecast {
-	var summary []models.SumTodaysForecast
-	var checkID []int
-	seen := make(map[int]bool)
+	var summaries []models.SumTodaysForecast
+	var spotIDs []int
+	seenSpotIDs := make(map[int]bool)
 
-	for _, elem := range forecast {
-		if !seen[elem.SpotID] {
-			checkID = append(checkID, elem.SpotID)
-			seen[elem.SpotID] = true
+	for _, surfForecast := range forecast {
+		if !seenSpotIDs[surfForecast.SpotID] {
+			spotIDs = append(spotIDs, surfForecast.SpotID)
+			seenSpotIDs[surfForecast.SpotID] = true
 		}
 	}
 
-	for elem := range checkID {
+	// make a summary for each location designated by the spotID.
+	for _, spotID := range spotIDs {
 		var spotSum models.SumTodaysForecast
 
-		// calculate avg waveheight data
 		count := 0.0
-		waveHTotal := 0.0
-		qualityTotal := 0.0
-		// windSpeedTotal := 0
-		name := ""
+		totalWaveHeight := 0.0
+		totalQuality := 0.0
+		totalWindSpeed := 0.0
+		var arrWindDirection []string
+		spotName := ""
 
-		for _, spot := range forecast {
-			if elem == spot.SpotID {
+		for i := range forecast {
+			if spotID == forecast[i].SpotID {
+				count += 1
+				totalWaveHeight += forecast[i].SizeFt
+				totalQuality += forecast[i].Shape
+				spotName = forecast[i].SpotName
 
-				// calculate wave data totals
-				waveHTotal += spot.SizeFt
-				qualityTotal += spot.Shape
-				// calculate windspeed total
+				// Get windspeed for each weather period
+				for j := range forecast[i].PeriodForecasts {
+					fmt.Println("Inside j := range forecast[i] loop")
+					// parse wind speed "5 mph"
+					windData := forecast[i].PeriodForecasts[j].WindSpeed
+					windDataFields := strings.Fields(windData)
+
+					// windSpeed is the "5", converted to an int
+					windSpeed, err := strconv.Atoi(windDataFields[0])
+					if err != nil {
+						fmt.Println("ERROR in SummarizeTodaysForecast ",
+							"windSpeed string conversion: ",
+							err,
+						)
+					}
+					totalWindSpeed += float64(windSpeed)
+
+					// windDataFields[1] is the direction, eg: "NW"
+					// collect them in arrWindDirection
+					arrWindDirection = append(arrWindDirection, windDataFields[1])
+				}
 			}
 		}
+		// determine average wind direction
+		avgWindDirection, _ := avgWindDirection(arrWindDirection)
 
-		spotSum.AvgWaveHeight = utils.RoundToTenth(waveHTotal / count)
-		spotSum.Quality = utils.RoundToTenth(qualityTotal / count)
+		spotSum.AvgWaveHeight = utils.RoundToTenth(totalWaveHeight / count)
+		spotSum.Wind.WindSpeed = utils.RoundToTenth(totalWindSpeed / count)
+		spotSum.Wind.Direction = avgWindDirection
+		spotSum.Quality = utils.RoundToTenth(totalQuality / count)
+		spotSum.SpotName = spotName
 
-		spotSum.SpotName = name
-
-		summary = append(summary, spotSum)
+		summaries = append(summaries, spotSum)
 	}
-	return summary
+	if len(summaries) == 0 {
+		fmt.Println("summries forecast is empty")
+	}
+	return summaries
 }
 
-// NOTE: arguments should be pointers.
-func avgWindSpeed() {}
+// avgWindDirection calculates the average direction of the of the wind in a given forecast.
+//
+// Parameters:
+//   - arrWindDirection: an array of wind directions. Ie: N, S, E, W
+//
+// Returns:
+// -
+func avgWindDirection(arrWindDirection []string) (string, float64) {
+	totalX := 0.0
+	totalY := 0.0
 
-// NOTE: arguments should be pointers.
-func avgWindDirection() {}
+	for _, bearing := range arrWindDirection {
+		degree := float64(models.BearingMap[bearing])
+		// convert degree to radians
+		radian := degree * math.Pi / 180
+		totalX += math.Cos(radian)
+		totalY += math.Sin(radian)
+	}
+	// calculate average degree
+	avgRadian := math.Atan2(totalY, totalX)
+	avgDeg := math.Mod(avgRadian*180/math.Pi+360, 360)
+
+	// find closest bearing. String abv. eg: N, NW, S, NE ect.
+	closestCompassLabel := ""
+	minDiff := 360.0
+
+	for label, bearing := range models.BearingMap {
+		distance := math.Abs(float64(bearing) - avgDeg)
+
+		if distance > 180 {
+			distance = 360 - distance
+		}
+		if distance < minDiff {
+			minDiff = distance
+			closestCompassLabel = label
+		}
+	}
+	return closestCompassLabel, avgDeg
+}
+
+func buildLocationSummary() {}
+
+func avgWaveHeight() {}
+
+func aveWaveQuality() {}
+
+func avgWindSpeed() {}

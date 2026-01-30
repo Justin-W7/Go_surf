@@ -1,8 +1,8 @@
 
 2026/01/22
 [ ] Complete functions in summary.go.
-    avgWindSpeed()
-    avgWindDirection()
+   [x] avgWindSpeed()
+   [ ] avgWindDirection()
 
 
 [ ] Data Flow 1:        

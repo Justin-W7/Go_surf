@@ -55,11 +55,14 @@ func main() {
 	// sort into am/pm forecasts
 	amForecasts, pmForecasts := processing.SortAMPMForecasts(todaysForecasts)
 
+	utils.ToJSONFile(amForecasts, "amForecasts")
+	utils.ToJSONFile(pmForecasts, "pmForecasts")
+
 	// Build todays summary forecast
 	amTodaysForecasts := processing.SummarizeTodaysForecast(amForecasts)
 	pmTodaysForecasts := processing.SummarizeTodaysForecast(pmForecasts)
 
 	// 6. Write to JSON file.
-	utils.ToJSONFile(amTodaysForecasts, "am_forecasts")
-	utils.ToJSONFile(pmTodaysForecasts, "pm_forecasts")
+	utils.ToJSONFile(amTodaysForecasts, "amTodaysforecasts")
+	utils.ToJSONFile(pmTodaysForecasts, "pmTodaysforecasts")
 }

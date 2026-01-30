@@ -47,12 +47,12 @@ type SumTodaysForecast struct {
 	SwellPeriod   float64
 	SwellSize     float64
 	WaterTemp     int
-	Wind          []SumWind
+	Wind          SumWind
 	AirTemp       float32
 }
 
 type SumWind struct {
-	Time      string
+	// Time      string
 	Direction string
 	WindSpeed float64
 }
