@@ -94,7 +94,8 @@ func SummarizeTodaysForecast(forecast []models.SurfForecast) []models.SumTodaysF
 //   - arrWindDirection: an array of wind directions. Ie: N, S, E, W
 //
 // Returns:
-// -
+//   - closestCompassLabel: a string with a compass label
+//   - avgDeg: the average bearing degree of the wind direction.
 func avgWindDirection(arrWindDirection []string) (string, float64) {
 	totalX := 0.0
 	totalY := 0.0
