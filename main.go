@@ -48,10 +48,10 @@ func main() {
 	todaysForecasts := processing.ParseTodaysForecasts(spotForecasts)
 
 	// append SpotWeather to forecasts.
-	processing.AppendSpotWeather(todaysForecasts)
+	todaysForecasts = processing.AppendSpotWeather(todaysForecasts)
 
 	// Append hourly weather period to each forecast.
-	todaysForecasts = processing.AppendHourlyWeatherForecasts(todaysForecasts)
+	processing.AppendHourlyWeatherForecasts(todaysForecasts)
 
 	var todaysFullForecasts []models.SurfForecast
 	for i := range todaysForecasts {

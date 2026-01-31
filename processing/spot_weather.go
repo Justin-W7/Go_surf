@@ -12,7 +12,7 @@ import (
 //
 // Return:
 //   - NONE: only completes an action
-func AppendSpotWeather(forecasts []models.SurfForecast) {
+func AppendSpotWeather(forecasts []models.SurfForecast) []models.SurfForecast {
 	for i := range forecasts {
 		weatherPoint, _ := api.FetchWeatherPoint(
 			forecasts[i].Coordinates[0],
@@ -21,4 +21,5 @@ func AppendSpotWeather(forecasts []models.SurfForecast) {
 		spotWeather, _ := ParseSpotWeather(weatherPoint)
 		forecasts[i].SpotWeather = spotWeather
 	}
+	return forecasts
 }

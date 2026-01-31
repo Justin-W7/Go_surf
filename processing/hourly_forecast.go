@@ -16,7 +16,7 @@ import (
 //
 // Returns:
 //   - NONE: only completes an action.
-func AppendHourlyWeatherForecasts(surfForecasts []models.SurfForecast) []models.SurfForecast {
+func AppendHourlyWeatherForecasts(surfForecasts []models.SurfForecast) {
 	for i := range surfForecasts {
 		sForecast := &surfForecasts[i]
 
@@ -49,5 +49,4 @@ func AppendHourlyWeatherForecasts(surfForecasts []models.SurfForecast) []models.
 			}
 		}
 	}
-	return surfForecasts
 }
