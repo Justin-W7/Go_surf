@@ -29,7 +29,6 @@ func SummarizeTodaysForecast(forecast []models.SurfForecast) []models.SumTodaysF
 			seenSpotIDs[surfForecast.SpotID] = true
 		}
 	}
-
 	// make a summary for each location designated by the spotID.
 	for _, spotID := range spotIDs {
 		var spotSum models.SumTodaysForecast
@@ -38,36 +37,36 @@ func SummarizeTodaysForecast(forecast []models.SurfForecast) []models.SumTodaysF
 		totalWaveHeight := 0.0
 		totalQuality := 0.0
 		totalWindSpeed := 0.0
+		windCount := 0.0
 		var arrWindDirection []string
 		spotName := ""
 
 		for i := range forecast {
+			thisForecast := forecast[i]
+
 			if spotID == forecast[i].SpotID {
 				count += 1
-				totalWaveHeight += forecast[i].SizeFt
-				totalQuality += forecast[i].Shape
-				spotName = forecast[i].SpotName
+				totalWaveHeight += thisForecast.SizeFt
+				totalQuality += thisForecast.Shape
+				spotName = thisForecast.SpotName
 
 				// Get windspeed for each weather period
-				for j := range forecast[i].PeriodForecasts {
-					fmt.Println("Inside j := range forecast[i] loop")
-					// parse wind speed "5 mph"
-					windData := forecast[i].PeriodForecasts[j].WindSpeed
-					windDataFields := strings.Fields(windData)
+				if thisForecast.PeriodForecasts != nil {
+					for j := range forecast[i].PeriodForecasts {
+						// parse wind speed "5 mph"
+						windData := thisForecast.PeriodForecasts[j].WindSpeed
+						windDataFields := strings.Fields(windData)
 
-					// windSpeed is the "5", converted to an int
-					windSpeed, err := strconv.Atoi(windDataFields[0])
-					if err != nil {
-						fmt.Println("ERROR in SummarizeTodaysForecast ",
-							"windSpeed string conversion: ",
-							err,
-						)
+						// windSpeed is the "5", converted to an int
+						windSpeed, err := strconv.Atoi(windDataFields[0])
+						if err != nil {
+							fmt.Println("ERROR in SummarizeTodaysForecast: ", "windSpeed string conversion: ", err)
+						}
+						totalWindSpeed += float64(windSpeed)
+						windCount++
+
+						arrWindDirection = append(arrWindDirection, forecast[i].PeriodForecasts[j].WindDirection)
 					}
-					totalWindSpeed += float64(windSpeed)
-
-					// windDataFields[1] is the direction, eg: "NW"
-					// collect them in arrWindDirection
-					arrWindDirection = append(arrWindDirection, windDataFields[1])
 				}
 			}
 		}
@@ -75,7 +74,11 @@ func SummarizeTodaysForecast(forecast []models.SurfForecast) []models.SumTodaysF
 		avgWindDirection, _ := avgWindDirection(arrWindDirection)
 
 		spotSum.AvgWaveHeight = utils.RoundToTenth(totalWaveHeight / count)
-		spotSum.Wind.WindSpeed = utils.RoundToTenth(totalWindSpeed / count)
+
+		if windCount > 0 {
+			spotSum.Wind.WindSpeed = utils.RoundToTenth(totalWindSpeed / windCount)
+		}
+
 		spotSum.Wind.Direction = avgWindDirection
 		spotSum.Quality = utils.RoundToTenth(totalQuality / count)
 		spotSum.SpotName = spotName

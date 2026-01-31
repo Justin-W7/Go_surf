@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"go_surf/api"
+	"go_surf/models"
 	"go_surf/processing"
 	"go_surf/utils"
 )
@@ -49,11 +50,18 @@ func main() {
 	// append SpotWeather to forecasts.
 	processing.AppendSpotWeather(todaysForecasts)
 
-	// Append hourly period to each forecast.
-	processing.AppendHourlyWeatherForecasts(todaysForecasts)
+	// Append hourly weather period to each forecast.
+	todaysForecasts = processing.AppendHourlyWeatherForecasts(todaysForecasts)
+
+	var todaysFullForecasts []models.SurfForecast
+	for i := range todaysForecasts {
+		if todaysForecasts[i].PeriodForecasts != nil {
+			todaysFullForecasts = append(todaysFullForecasts, todaysForecasts[i])
+		}
+	}
 
 	// sort into am/pm forecasts
-	amForecasts, pmForecasts := processing.SortAMPMForecasts(todaysForecasts)
+	amForecasts, pmForecasts := processing.SortAMPMForecasts(todaysFullForecasts)
 
 	utils.ToJSONFile(amForecasts, "amForecasts")
 	utils.ToJSONFile(pmForecasts, "pmForecasts")

@@ -16,9 +16,11 @@ import (
 //
 // Returns:
 //   - NONE: only completes an action.
-func AppendHourlyWeatherForecasts(surfForecasts []models.SurfForecast) {
+func AppendHourlyWeatherForecasts(surfForecasts []models.SurfForecast) []models.SurfForecast {
 	for i := range surfForecasts {
-		URL := surfForecasts[i].SpotWeather.Properties.ForecastHourly
+		sForecast := &surfForecasts[i]
+
+		URL := sForecast.SpotWeather.Properties.ForecastHourly
 
 		rawHourlyWeatherData, err := api.FetchHourlyWeatherForecast(URL)
 		if err != nil {
@@ -31,21 +33,21 @@ func AppendHourlyWeatherForecasts(surfForecasts []models.SurfForecast) {
 		}
 
 		for j := range hourlyWeather.Properties.Periods {
-			start := hourlyWeather.Properties.Periods[j].StartTime
+			period := hourlyWeather.Properties.Periods[j]
+			start := period.StartTime
 
 			t, err := time.Parse(time.RFC3339, start)
 			if err != nil {
 				fmt.Println("ERROR: ", err)
 			}
 
-			surfSpotTime := surfForecasts[i].Timestamp
+			sForecastTime := sForecast.Timestamp
+			tUnix := t.Unix()
 
-			if t.Unix()/3600 == surfSpotTime/3600 {
-				surfForecasts[i].PeriodForecasts = append(
-					surfForecasts[i].PeriodForecasts,
-					hourlyWeather.Properties.Periods[j],
-				)
+			if tUnix/3600 == sForecastTime/3600 {
+				sForecast.PeriodForecasts = append(sForecast.PeriodForecasts, period)
 			}
 		}
 	}
+	return surfForecasts
 }
