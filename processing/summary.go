@@ -60,7 +60,7 @@ func SummarizeTodaysForecast(forecast []models.SurfForecast) []models.SumTodaysF
 		forecastCount := float64(len(id.Indicies))
 		summary.AvgWaveHeight = utils.RoundToTenth(totalWaveHeight / forecastCount)
 		summary.Quality = utils.RoundToTenth(totalQuality / forecastCount)
-		summary.AirTemp = float32(totalAirTemp) / float32(forecastCount)
+		summary.AirTemp = utils.RoundToTenth(totalAirTemp / forecastCount)
 		summary.Wind.Direction, _ = avgWindDirection(arrWindDirection)
 		summary.Wind.WindSpeed = utils.RoundToTenth(totalWindSpeed / forecastCount)
 

@@ -1,106 +1,106 @@
 [
   {
     "SpotName": "Santa Ana River Jetties",
-    "AvgWaveHeight": 3.3931343208658853,
-    "Quality": 0.5555555555555556,
+    "AvgWaveHeight": 3.4,
+    "Quality": 0.6,
     "SwellPeriod": 0,
     "SwellSize": 0,
     "WaterTemp": 0,
     "Wind": {
-      "Direction": "N",
-      "WindSpeed": 0
+      "Direction": "S",
+      "WindSpeed": 2.2
     },
-    "AirTemp": 60.444443
-  },
-  {
-    "SpotName": "56th Street",
-    "AvgWaveHeight": 2.986383499254392,
-    "Quality": 0.6111111111111112,
-    "SwellPeriod": 0,
-    "SwellSize": 0,
-    "WaterTemp": 0,
-    "Wind": {
-      "Direction": "N",
-      "WindSpeed": 0
-    },
-    "AirTemp": 60
-  },
-  {
-    "SpotName": "40th Street",
-    "AvgWaveHeight": 2.8482436448938184,
-    "Quality": 0.5,
-    "SwellPeriod": 0,
-    "SwellSize": 0,
-    "WaterTemp": 0,
-    "Wind": {
-      "Direction": "N",
-      "WindSpeed": 0
-    },
-    "AirTemp": 60
+    "AirTemp": 60.4
   },
   {
     "SpotName": "36th Street",
-    "AvgWaveHeight": 2.504884447581535,
+    "AvgWaveHeight": 2.5,
     "Quality": 0.5,
     "SwellPeriod": 0,
     "SwellSize": 0,
     "WaterTemp": 0,
     "Wind": {
-      "Direction": "N",
-      "WindSpeed": 0
+      "Direction": "S",
+      "WindSpeed": 2.2
     },
     "AirTemp": 60
   },
   {
-    "SpotName": "Newport Point",
-    "AvgWaveHeight": 1.9325315153228684,
-    "Quality": 0.1111111111111111,
-    "SwellPeriod": 0,
-    "SwellSize": 0,
-    "WaterTemp": 0,
-    "Wind": {
-      "Direction": "N",
-      "WindSpeed": 0
-    },
-    "AirTemp": 60.88889
-  },
-  {
-    "SpotName": "The Wedge",
-    "AvgWaveHeight": 3.308440701660788,
-    "Quality": 0,
-    "SwellPeriod": 0,
-    "SwellSize": 0,
-    "WaterTemp": 0,
-    "Wind": {
-      "Direction": "N",
-      "WindSpeed": 0
-    },
-    "AirTemp": 61.333332
-  },
-  {
     "SpotName": "Blackies",
-    "AvgWaveHeight": 2.947270528996941,
+    "AvgWaveHeight": 2.9,
     "Quality": 0.5,
     "SwellPeriod": 0,
     "SwellSize": 0,
     "WaterTemp": 0,
     "Wind": {
-      "Direction": "N",
-      "WindSpeed": 0
+      "Direction": "S",
+      "WindSpeed": 2.2
     },
     "AirTemp": 60
   },
   {
     "SpotName": "Newport Pier",
-    "AvgWaveHeight": 9.549019913411765,
+    "AvgWaveHeight": 9.5,
     "Quality": 1,
     "SwellPeriod": 0,
     "SwellSize": 0,
     "WaterTemp": 0,
     "Wind": {
-      "Direction": "N",
-      "WindSpeed": 0
+      "Direction": "S",
+      "WindSpeed": 2.2
     },
     "AirTemp": 60
+  },
+  {
+    "SpotName": "The Wedge",
+    "AvgWaveHeight": 3.3,
+    "Quality": 0,
+    "SwellPeriod": 0,
+    "SwellSize": 0,
+    "WaterTemp": 0,
+    "Wind": {
+      "Direction": "S",
+      "WindSpeed": 2.2
+    },
+    "AirTemp": 61.3
+  },
+  {
+    "SpotName": "56th Street",
+    "AvgWaveHeight": 3,
+    "Quality": 0.6,
+    "SwellPeriod": 0,
+    "SwellSize": 0,
+    "WaterTemp": 0,
+    "Wind": {
+      "Direction": "S",
+      "WindSpeed": 2.2
+    },
+    "AirTemp": 60
+  },
+  {
+    "SpotName": "40th Street",
+    "AvgWaveHeight": 2.8,
+    "Quality": 0.5,
+    "SwellPeriod": 0,
+    "SwellSize": 0,
+    "WaterTemp": 0,
+    "Wind": {
+      "Direction": "S",
+      "WindSpeed": 2.2
+    },
+    "AirTemp": 60
+  },
+  {
+    "SpotName": "Newport Point",
+    "AvgWaveHeight": 1.9,
+    "Quality": 0.1,
+    "SwellPeriod": 0,
+    "SwellSize": 0,
+    "WaterTemp": 0,
+    "Wind": {
+      "Direction": "S",
+      "WindSpeed": 2.2
+    },
+    "AirTemp": 60.9
   }
 ]
