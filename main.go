@@ -53,6 +53,7 @@ func main() {
 	// Append hourly weather period to each forecast.
 	processing.AppendHourlyWeatherForecasts(todaysForecasts)
 
+	// Only include forecasts that have hourly weather data
 	var todaysFullForecasts []models.SurfForecast
 	for i := range todaysForecasts {
 		if todaysForecasts[i].PeriodForecasts != nil {
@@ -63,8 +64,8 @@ func main() {
 	// sort into am/pm forecasts
 	amForecasts, pmForecasts := processing.SortAMPMForecasts(todaysFullForecasts)
 
-	utils.ToJSONFile(amForecasts, "amForecasts")
-	utils.ToJSONFile(pmForecasts, "pmForecasts")
+	// utils.ToJSONFile(amForecasts, "amForecasts")
+	// utils.ToJSONFile(pmForecasts, "pmForecasts")
 
 	// Build todays summary forecast
 	amTodaysForecasts := processing.SummarizeTodaysForecast(amForecasts)

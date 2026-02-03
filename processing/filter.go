@@ -26,7 +26,7 @@ func SortAMPMForecasts(
 		if hour >= 0 && hour <= 12 {
 			am = append(am, i)
 		}
-		if hour >= 1 && hour <= 12 {
+		if hour >= 13 && hour <= 23 {
 			pm = append(pm, i)
 		}
 	}
