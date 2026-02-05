@@ -2,18 +2,19 @@ package processing
 
 import (
 	"fmt"
-	"go_surf/models"
-	"go_surf/utils"
 	"math"
 	"strconv"
 	"strings"
+
+	"go_surf/models"
+	"go_surf/utils"
 )
 
 func SummarizeTodaysForecast(forecast []models.SurfForecast) []models.SumTodaysForecast {
 	var summaries []models.SumTodaysForecast
 	seenSpotIDs := make(map[int]Values)
 
-	// iterate through forecast values - store unique SpotIDs and their indicies.
+	// Iterate through forecast values - store unique SpotIDs and their indicies.
 	for index, spot := range forecast {
 		v, seen := seenSpotIDs[spot.SpotID]
 		if !seen {
