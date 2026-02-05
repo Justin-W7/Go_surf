@@ -5,5 +5,7 @@ import (
 )
 
 func main() {
-	api.FetchNDBCBouyData(api.NDBCBouyDataURL, 41002)
+
+	inputfile := "api/station_lists/ndbcstations.txt"
+	api.FetchNDBCBouyData(api.NDBCBouyDataURL, inputfile)
 }

@@ -3,9 +3,11 @@
 package api
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"go_surf/models"
@@ -123,7 +125,7 @@ func FetchHourlyWeatherForecast(url string) ([]byte, error) {
 // FetchWeatherGridForecast retrieves grid-based weather forecast data
 // from a specific NWS url.
 //
-// Paramters:
+// Parameters:
 //   - url: The API endpoint URL for the grid forecast.
 //
 // Returns:
@@ -134,13 +136,39 @@ func FetchWeatherGridForecast(url string) ([]byte, error) {
 	return fetchURL(url)
 }
 
-func FetchNDBCBouyData(url string, stationID int) {
-	bouyUrl := fmt.Sprintf(url, stationID)
-	data, err := http.Get(bouyUrl)
+// FetchNDBCBouyData makes Get request to the provided url.
+// Then stores data in a local text file.
+//
+// Parameters:
+//	- url: The API endpoint url for NDBCBouyDataURL
+//
+// Returns:
+// - none: writes response data to text file
+//
+
+func FetchNDBCBouyData(url string, inputfile string) {
+
+	file, err := os.Open(inputfile)
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer data.Body.Close()
+	defer file.Close()
 
-	utils.BouyDataToTextFile(data, stationID)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		stationID := scanner.Text()
+		if stationID == "" {
+			continue
+		}
+
+		bouyUrl := fmt.Sprintf(url, stationID)
+		data, err := http.Get(bouyUrl)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer data.Body.Close()
+
+		utils.BouyDataToTextFile(data, stationID)
+	}
+
 }
