@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"go_surf/models"
+	"go_surf/utils"
 )
 
 // fetchURL performs an HTTP GET request for the given URL and returns
@@ -131,4 +132,15 @@ func FetchHourlyWeatherForecast(url string) ([]byte, error) {
 //   - error: An errif the HTTP request fails.
 func FetchWeatherGridForecast(url string) ([]byte, error) {
 	return fetchURL(url)
+}
+
+func FetchNDBCBouyData(url string, stationID int) {
+	bouyUrl := fmt.Sprintf(url, stationID)
+	data, err := http.Get(bouyUrl)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer data.Body.Close()
+
+	utils.BouyDataToTextFile(data, stationID)
 }
