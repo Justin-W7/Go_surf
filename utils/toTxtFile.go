@@ -9,11 +9,11 @@ import (
 	"time"
 )
 
-func BouyDataToTextFile(data *http.Response, stationID string) {
-	timestamp := time.Now().Format("2006-01-02")
+func BouyDataToTextFile(data *http.Response, id string) {
+	t := time.Now().Format("2006-01-02 15:04:05")
 
-	fileName := fmt.Sprintf("%s_bouydata_%s.txt", timestamp, stationID)
-	fullPath := filepath.Join("db/bouy_data", fileName)
+	fileName := fmt.Sprintf("%s_bouydata_%s.txt", t, id)
+	fullPath := filepath.Join("db/raw_data/NDBC_bouy_data", fileName)
 
 	file, err := os.Create(fullPath)
 	if err != nil {
