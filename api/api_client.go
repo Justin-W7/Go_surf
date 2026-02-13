@@ -136,16 +136,15 @@ func FetchWeatherGridForecast(url string) ([]byte, error) {
 	return fetchURL(url)
 }
 
-// FetchNDBCBouyData makes Get request to the provided url.
-// Then stores data in a local text file.
+// FetchNDBCBuoyDataFromFile makes Get request to the provided url.
+// Stores raw data in a local text file.
 //
 // Parameters:
 //   - url: The API endpoint url for NDBCBouyDataURL
 //
 // Returns:
 // - none: writes response data to text file
-func FetchNDBCBouyData(url string, inputfile string) {
-
+func FetchNDBCBuoyDataFromStationList(url string, inputfile string) {
 	file, err := os.Open(inputfile)
 	if err != nil {
 		fmt.Println(err)
@@ -159,8 +158,8 @@ func FetchNDBCBouyData(url string, inputfile string) {
 			continue
 		}
 
-		bouyUrl := fmt.Sprintf(url, stationID)
-		data, err := http.Get(bouyUrl)
+		buoyURL := fmt.Sprintf(url, stationID)
+		data, err := http.Get(buoyURL)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -168,7 +167,7 @@ func FetchNDBCBouyData(url string, inputfile string) {
 
 		rStatus := data.StatusCode
 		if rStatus == 200 {
-			utils.BouyDataToTextFile(data, stationID)
+			utils.SaveRawBuoyDataToFile(data, stationID)
 		}
 	}
 }

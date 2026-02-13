@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func BouyDataToTextFile(data *http.Response, id string) {
+func SaveRawBuoyDataToFile(data *http.Response, id string) {
 	t := time.Now().Format("2006-01-02 15:04:05")
 
 	fileName := fmt.Sprintf("%s_bouydata_%s.txt", t, id)
