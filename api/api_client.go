@@ -141,6 +141,7 @@ func FetchWeatherGridForecast(url string) ([]byte, error) {
 //
 // Parameters:
 //   - url: The API endpoint url for NDBCBouyDataURL
+//   - inputfile: A file pathway that contains the list of station IDs to process.
 //
 // Returns:
 // - none: writes response data to text file

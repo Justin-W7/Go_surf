@@ -1,11 +1,14 @@
 package main
 
 import (
-	"go_surf/api"
+	"go_surf/menu"
+	"go_surf/utils"
 )
 
-var STATION_ID_FILE string = "api/station_lists/ndbcstations_CA.txt"
-
 func main() {
-	api.FetchNDBCBuoyDataFromStationList(api.NDBCBouyDataURL, STATION_ID_FILE)
+
+	db := utils.ConnectDatabase()
+	defer utils.DisconnectDatabase(db)
+
+	menu.StartMenuLoop(db)
 }
