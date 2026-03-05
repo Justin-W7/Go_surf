@@ -3,7 +3,7 @@ package menu
 import (
 	"database/sql"
 	"fmt"
-	"go_surf/utils"
+	"go_surf/database"
 )
 
 func StartMenuLoop(db *sql.DB) {
@@ -25,7 +25,7 @@ func StartMenuLoop(db *sql.DB) {
 func printMenu() {
 	fmt.Println("--- Enter one of the options below ---")
 	fmt.Println()
-	fmt.Println("a - UPDATE TABLE")
+	fmt.Println("a - DATABASE MENU")
 	fmt.Println("b - Option B (placeholder)")
 	fmt.Println("c - Option C (placeholder)")
 	fmt.Println("d - Option D (placeholder)")
@@ -38,7 +38,7 @@ func printMenu() {
 func selectMenuItem(i string, db *sql.DB) {
 	switch i {
 	case "a":
-		utils.DatabaseMenu(db)
+		database.DatabaseMenu(db)
 	case "b":
 		fmt.Println("b - place holder.")
 	case "c":

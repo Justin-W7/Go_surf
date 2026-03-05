@@ -1,4 +1,25 @@
+[X] 1. type BuoyDataPoint struct {}
 
-2026/01/22
+[] 2. Helper functions:    
+    func parseFloat(values string) (*float64, error) {}
+
+[] 3. Parse One Line
+    func parseBuoyLine(line string, buoyID int) (*BuoydataPoint, error) {}
+
+[] 4. Insert Function
+    func insertBuoyData(db *sql.DB, p *BuoyDataPoint) error {}
+
+[] 5. Process One File
+    func processBuoyFile(db *sql.DB, path string, buoyID int) error {}
+
+
+
+All of that refactored into this - 
+    func updateRealTimeBuoyDataTable(db *sql.DB) {}
+
+
+pipeline
+
+directory -> files -> lines -> convert valuse -> create struct -> insert into database
 
 

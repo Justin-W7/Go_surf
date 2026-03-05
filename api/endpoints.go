@@ -10,4 +10,9 @@ const (
 	NDBCBouyDataURL = "https://www.ndbc.noaa.gov/data/realtime2/%s.txt"
 
 	STATION_ID_FILE = "api/station_lists/ndbcstations_CA.txt"
+
+	DATABASE_BUOYS_FILE        = "database/buoys.csv"
+	DATABASE_CITIES_FILE       = "database/buoys.csv"
+	DATABASE_SURFSPOTS_FILE    = "database/surfspots.csv"
+	DATABASE_BUOYS_RT_RAW_DATA = "database/raw_data/NDBC_buoy_data"
 )
