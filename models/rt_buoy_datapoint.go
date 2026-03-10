@@ -14,4 +14,5 @@ type BuoyDataPoint struct {
 	MeanWaveDirectionDegT *float64
 	AirTempDegC           *float64
 	WaterTempDegC         *float64
+	InsertedAt            time.Time
 }

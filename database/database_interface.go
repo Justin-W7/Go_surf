@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"go_surf/api"
 	"go_surf/models"
+	"go_surf/processing"
+	"go_surf/utils"
 	"io"
 	"log"
 	"os"
@@ -27,6 +29,7 @@ func DatabaseMenu(db *sql.DB) {
 	fmt.Println("c - Update static cities table from csv 'cities.csv'.")
 	fmt.Println("d - Fetch current buoy data.")
 	fmt.Println("e - Update real time buoy table.")
+	fmt.Println("f - Update real time weather table.")
 	fmt.Println("------------------------------------------------------------")
 	fmt.Println()
 	fmt.Print("> ")
@@ -42,7 +45,9 @@ func DatabaseMenu(db *sql.DB) {
 	case "d":
 		api.FetchNDBCBuoyDataFromStationList(api.NDBCBouyDataURL, api.STATION_ID_FILE)
 	case "e":
-		updateRealTimeBuoyDataTable(db)
+		updateRTBuoyDataTable(db)
+	case "f":
+		updateRTWeatherTable(db)
 	default:
 		fmt.Println("Invalid selection, try again.")
 	}
@@ -65,7 +70,6 @@ func ConnectDatabase() *sql.DB {
 
 	// fmt.Println("Table update succesful!")
 	fmt.Println()
-	time.Sleep(1 * time.Second)
 
 	return db
 }
@@ -220,6 +224,7 @@ func updateCitiesTable(db *sql.DB) {
 			lineNumber++
 			continue
 		}
+		// split record into tokens
 
 		// convert csv fields to proper types
 		id, err := strconv.Atoi(record[0])
@@ -234,7 +239,7 @@ func updateCitiesTable(db *sql.DB) {
 	}
 }
 
-func updateRealTimeBuoyDataTable(db *sql.DB) {
+func updateRTBuoyDataTable(db *sql.DB) {
 	// get file
 	folder := api.DATABASE_BUOYS_RT_RAW_DATA
 
@@ -297,7 +302,8 @@ func parseRTBuoyLine(line string, buoyID int) (*models.BuoyDataPoint, error) {
 
 	// parse time
 	timeLayout := "2006 01 02 15 04"
-	t, err := time.Parse(timeLayout, strings.Join(data[:5], " "))
+
+	recordedAt, err := time.Parse(timeLayout, strings.Join(data[:5], " "))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -310,12 +316,13 @@ func parseRTBuoyLine(line string, buoyID int) (*models.BuoyDataPoint, error) {
 	dominantWavePeriod, _ := parseDataFloat(data[9])
 	avgWavePeriod, _ := parseDataFloat(data[10])
 	meanWaveDirection, _ := parseDataFloat(data[11])
-	airTemperature, _ := parseDataFloat(data[12])
-	waterTemperature, _ := parseDataFloat(data[13])
+	airTemperature, _ := parseDataFloat(data[14])
+	waterTemperature, _ := parseDataFloat(data[15])
 
-	return &models.BuoyDataPoint{
+	// build models.BuoyDataPoint struct
+	p := &models.BuoyDataPoint{
 		BuoyID:                buoyID,
-		RecordedAt:            t,
+		RecordedAt:            recordedAt,
 		WindDirectionDegT:     windDirection,
 		WindSpeedMetersPerSec: windSpeed,
 		WindGustMetersPerSec:  windGust,
@@ -325,7 +332,9 @@ func parseRTBuoyLine(line string, buoyID int) (*models.BuoyDataPoint, error) {
 		MeanWaveDirectionDegT: meanWaveDirection,
 		AirTempDegC:           airTemperature,
 		WaterTempDegC:         waterTemperature,
-	}, nil
+		InsertedAt:            time.Now().UTC(),
+	}
+	return p, nil
 }
 
 // parseDataTypes returns a pointer so it can return multiple states.
@@ -348,17 +357,18 @@ func insertBuoyData(db *sql.DB, p *models.BuoyDataPoint) error {
 			INSERT INTO real_time_buoy_data_points (
 				buoy_id,
 				recorded_at,
-				wind_direction_degt,
-				wind_speed_in_meters_per_sec,
-				wind_gust_in_meters_per_sec,
-				wave_height_m,
-				dominant_wave_period_sec,
-				avg_wave_period_sec,
-				mean_wave_direction_degt,
-				air_temp_degc,
-				water_temp_degc
+				windDir_degt,
+				windSpeed_m_pers,
+				windGust_m_pers,
+				waveH_m,
+				domWP_sec,
+				avgWaveP_sec,
+				meanWaveDir_degt,
+				airT_degc,
+				waterT_degc,
+				inserted_at
 				)
-			Values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+			Values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 		`,
 		p.BuoyID,
 		p.RecordedAt,
@@ -371,10 +381,105 @@ func insertBuoyData(db *sql.DB, p *models.BuoyDataPoint) error {
 		p.MeanWaveDirectionDegT,
 		p.AirTempDegC,
 		p.WaterTempDegC,
+		p.InsertedAt,
 	)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func updateRTWeatherTable(db *sql.DB) {
+	// for each record in cities table, get latitude and longitude.
+	rows, err := db.Query("SELECT id, latitude, longitude FROM cities")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var id int
+		var lat float64
+		var lon float64
+
+		err = rows.Scan(&id, &lat, &lon)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// get weather hourly weather forcast for lat lon.
+		url := fmt.Sprintf(api.NWSWeatherURL, lat, lon)
+		data, err := api.FetchWeatherForecast(url)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// parse spot weather for hourly forecast url
+		forecast, err := processing.ParseSpotWeather(data)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// get hourly forecast
+		hourlyUrl := forecast.Properties.ForecastHourly
+		rawData, err := api.FetchHourlyWeatherForecast(hourlyUrl)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		hourlyForecast, err := processing.ParseHourlyWeatherForecast(rawData)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		dataPoint, err := parseRTWeatherData(id, &hourlyForecast)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		insertRTWeatherData(db, dataPoint)
+	}
+}
+
+func parseRTWeatherData(id int, data *models.HourlyWeatherForecast) (*models.WeatherDatapoint, error) {
+	forecast := *data
+
+	t := time.Now().UTC()
+
+	st := forecast.Properties.Periods[0].StartTime
+
+	startTime, err := time.Parse(time.RFC3339, st)
+	if err != nil {
+		log.Fatal(err)
+	}
+	utcStartTime := startTime.UTC()
+	fmt.Println("now: ", t)
+	fmt.Println("start: ", utcStartTime)
+
+	observedAt := utcStartTime
+	recordedAt := t
+	windSpeed := forecast.Properties.Periods[0].WindSpeed
+	windDir := forecast.Properties.Periods[0].WindDirection
+	airTempC := utils.FarenheitToCelsius(float64(forecast.Properties.Periods[0].Temperature))
+	precipitation := forecast.Properties.Periods[0].ProbabilityOfPrecipitation.Value
+	cloudCoverage := forecast.Properties.Periods[0].ShortForecast
+
+	// parse into struct to be passed to an insert function
+	p := &models.WeatherDatapoint{
+		ID:            id,
+		ObservedAt:    observedAt,
+		RecordedAt:    recordedAt,
+		WindSpeed:     &windSpeed,
+		WindDirection: &windDir,
+		AirTemp:       &airTempC,
+		Precipitation: &precipitation,
+		CloudCoverage: &cloudCoverage,
+	}
+	return p, nil
+}
+
+func insertRTWeatherData(db *sql.DB, p *models.WeatherDatapoint) {
+	_, err := db.Exec(`INSERT INTO`)
+
 }
