@@ -3,7 +3,6 @@ package menu
 import (
 	"database/sql"
 	"fmt"
-	"go_surf/database"
 )
 
 func StartMenuLoop(db *sql.DB) {
@@ -38,7 +37,7 @@ func printMenu() {
 func selectMenuItem(i string, db *sql.DB) {
 	switch i {
 	case "a":
-		database.DatabaseMenu(db)
+		DatabaseMenu(db)
 	case "b":
 		fmt.Println("b - place holder.")
 	case "c":

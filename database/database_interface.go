@@ -20,39 +20,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// DatabaseMenu is the cli for static database updates.
-func DatabaseMenu(db *sql.DB) {
-	i := ""
-	fmt.Println()
-	fmt.Println("a - Update static buoy table from csv 'buoys.csv'.")
-	fmt.Println("b - Update static surfspot table from csv 'surfspots.csv'.")
-	fmt.Println("c - Update static cities table from csv 'cities.csv'.")
-	fmt.Println("d - Fetch current buoy data.")
-	fmt.Println("e - Update real time buoy table.")
-	fmt.Println("f - Update real time weather table.")
-	fmt.Println("------------------------------------------------------------")
-	fmt.Println()
-	fmt.Print("> ")
-	fmt.Scan(&i)
-
-	switch i {
-	case "a":
-		updateBuoyTable(db)
-	case "b":
-		updateSurfSpotTable(db)
-	case "c":
-		updateCitiesTable(db)
-	case "d":
-		api.FetchNDBCBuoyDataFromStationList(api.NDBCBouyDataURL, api.STATION_ID_FILE)
-	case "e":
-		updateRTBuoyDataTable(db)
-	case "f":
-		updateRTWeatherTable(db)
-	default:
-		fmt.Println("Invalid selection, try again.")
-	}
-}
-
 // ConnectDatabase connects the program to the local database on program start.
 func ConnectDatabase() *sql.DB {
 	connStr := "user=postgres password=password dbname=surftest sslmode=disable"
@@ -85,7 +52,7 @@ func DisconnectDatabase(db *sql.DB) {
 }
 
 // udpateBuoyTable updates the static table Buoys via a csv in the api folder.
-func updateBuoyTable(db *sql.DB) {
+func UpdateBuoyTable(db *sql.DB) {
 	file, err := os.Open(api.DATABASE_BUOYS_FILE)
 	if err != nil {
 		log.Fatal(err)
@@ -135,7 +102,7 @@ func updateBuoyTable(db *sql.DB) {
 }
 
 // updateSurfSpotTable updates the static table surfspot via surfspots.csv
-func updateSurfSpotTable(db *sql.DB) {
+func UpdateSurfSpotTable(db *sql.DB) {
 	file, err := os.Open(api.DATABASE_SURFSPOTS_FILE)
 	if err != nil {
 		log.Fatal(err)
@@ -188,7 +155,7 @@ func updateSurfSpotTable(db *sql.DB) {
 }
 
 // updateCitiesTable updates static table "cities" with city record information.
-func updateCitiesTable(db *sql.DB) {
+func UpdateCitiesTable(db *sql.DB) {
 	file, err := os.Open(api.DATABASE_CITIES_FILE)
 	if err != nil {
 		log.Fatal(err)
@@ -239,8 +206,10 @@ func updateCitiesTable(db *sql.DB) {
 	}
 }
 
-func updateRTBuoyDataTable(db *sql.DB) {
-	// get file
+func UpdateRTBuoyDataTable(db *sql.DB, url string, inputFile string) {
+	// get raw data files
+	api.FetchNDBCBuoyDataFromStationList(url, inputFile)
+
 	folder := api.DATABASE_BUOYS_RT_RAW_DATA
 
 	files, err := os.ReadDir(folder)
@@ -390,7 +359,7 @@ func insertBuoyData(db *sql.DB, p *models.BuoyDataPoint) error {
 	return nil
 }
 
-func updateRTWeatherTable(db *sql.DB) {
+func UpdateRTWeatherTable(db *sql.DB) {
 	// for each record in cities table, get latitude and longitude.
 	rows, err := db.Query("SELECT id, latitude, longitude FROM cities")
 	if err != nil {
@@ -420,9 +389,9 @@ func updateRTWeatherTable(db *sql.DB) {
 		if err != nil {
 			log.Fatal(err)
 		}
+		hourlyUrl := forecast.Properties.ForecastHourly
 
 		// get hourly forecast
-		hourlyUrl := forecast.Properties.ForecastHourly
 		rawData, err := api.FetchHourlyWeatherForecast(hourlyUrl)
 		if err != nil {
 			log.Fatal(err)
@@ -438,7 +407,10 @@ func updateRTWeatherTable(db *sql.DB) {
 			log.Fatal(err)
 		}
 
-		insertRTWeatherData(db, dataPoint)
+		err = insertRTWeatherData(db, dataPoint)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
@@ -454,8 +426,6 @@ func parseRTWeatherData(id int, data *models.HourlyWeatherForecast) (*models.Wea
 		log.Fatal(err)
 	}
 	utcStartTime := startTime.UTC()
-	fmt.Println("now: ", t)
-	fmt.Println("start: ", utcStartTime)
 
 	observedAt := utcStartTime
 	recordedAt := t
@@ -467,7 +437,7 @@ func parseRTWeatherData(id int, data *models.HourlyWeatherForecast) (*models.Wea
 
 	// parse into struct to be passed to an insert function
 	p := &models.WeatherDatapoint{
-		ID:            id,
+		CityID:        id,
 		ObservedAt:    observedAt,
 		RecordedAt:    recordedAt,
 		WindSpeed:     &windSpeed,
@@ -479,7 +449,32 @@ func parseRTWeatherData(id int, data *models.HourlyWeatherForecast) (*models.Wea
 	return p, nil
 }
 
-func insertRTWeatherData(db *sql.DB, p *models.WeatherDatapoint) {
-	_, err := db.Exec(`INSERT INTO`)
+func insertRTWeatherData(db *sql.DB, p *models.WeatherDatapoint) error {
+	_, err := db.Exec(`
+			INSERT INTO current_weather (
+				city_id,
+				recorded_at,
+				wind_speed,
+				wind_direction,
+				air_temp_c,
+				precipitation,
+				cloud_coverage,
+				observed_at
+				)
+			Values ($1, $2, $3, $4, $5, $6, $7, $8)
+		`,
+		p.CityID,
+		p.RecordedAt,
+		p.WindSpeed,
+		p.WindDirection,
+		p.AirTemp,
+		p.Precipitation,
+		p.CloudCoverage,
+		p.ObservedAt,
+	)
+	if err != nil {
+		return err
+	}
 
+	return nil
 }

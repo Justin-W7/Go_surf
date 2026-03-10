@@ -10,5 +10,7 @@ func main() {
 	db := database.ConnectDatabase()
 	defer database.DisconnectDatabase(db)
 
+	database.StartDataIngestion(db)
+
 	menu.StartMenuLoop(db)
 }
