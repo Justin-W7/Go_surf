@@ -19,6 +19,7 @@ func StartRTBuoyDataIngestion(db *sql.DB) {
 		api.FetchNDBCBuoyDataFromStationList(api.NDBCBouyDataURL, api.STATION_ID_FILE)
 		fmt.Println("Updating Real Time Buoy Data")
 		UpdateRTBuoyDataTable(db)
+		MoveOldBuoyData()
 		time.Sleep(15 * time.Minute)
 	}
 }

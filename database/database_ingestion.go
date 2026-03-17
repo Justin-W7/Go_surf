@@ -50,6 +50,24 @@ func DisconnectDatabase(db *sql.DB) {
 	fmt.Println()
 }
 
+// move old buoy data from active folder to cold folder.
+func MoveOldBuoyData() {
+	srcDir := api.DATABASE_BUOYS_RT_RAW_DATA
+	dstDir := api.OLD_BUOY_DATA_PATH
+
+	files, err := os.ReadDir(api.DATABASE_BUOYS_RT_RAW_DATA)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, file := range files {
+		srcPath := filepath.Join(srcDir, file.Name())
+		dstPath := filepath.Join(dstDir, file.Name())
+
+		os.Rename(srcPath, dstPath)
+	}
+}
+
 // ClearRTData truncates (deletes) all the real time data tables within
 // the database and resets their respective sequence counters.
 // This should mostly be used in testing and development.
@@ -513,4 +531,16 @@ func insertRTWeatherData(db *sql.DB, p *models.WeatherDatapoint) error {
 	}
 
 	return nil
+}
+
+func UpdateCurrentSurfConditions() {
+	//
+}
+
+func parseCurrentSurfConditions() {
+
+}
+
+func insertCurrentSurfConditions() {
+
 }

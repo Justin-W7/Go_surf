@@ -15,4 +15,5 @@ const (
 	DATABASE_CITIES_FILE       = "database/cities.csv"
 	DATABASE_SURFSPOTS_FILE    = "database/surfspots.csv"
 	DATABASE_BUOYS_RT_RAW_DATA = "database/raw_data/NDBC_buoy_data"
+	OLD_BUOY_DATA_PATH         = "database/raw_data/old_NDBC_buoy_data"
 )

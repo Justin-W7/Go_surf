@@ -21,6 +21,7 @@ func DatabaseMenu(db *sql.DB) {
 		fmt.Println("e - Update real time buoy table.")
 		fmt.Println("f - Update real time weather table.")
 		fmt.Println("g - CLEAR real time table data.")
+		fmt.Println("i - MOVE current rt buoy data to cold folder.")
 		fmt.Println()
 		fmt.Println("------------------------------------------------------------")
 		fmt.Print("> ")
@@ -42,6 +43,8 @@ func DatabaseMenu(db *sql.DB) {
 			database.UpdateRTWeatherTable(db)
 		case "g":
 			database.ClearRTData(db)
+		case "i":
+			database.MoveOldBuoyData()
 		default:
 			if i != "q" {
 				fmt.Println("Invalid selection, try again.")

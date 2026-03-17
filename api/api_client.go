@@ -172,3 +172,35 @@ func FetchNDBCBuoyDataFromStationList(url string, inputfile string) {
 		}
 	}
 }
+
+func CheckNDBCBuoyDataResponse(url string, inputfile string) {
+	file, err := os.Open(inputfile)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		stationID := scanner.Text()
+		if stationID == "" {
+			continue
+		}
+
+		buoyURL := fmt.Sprintf(url, stationID)
+		data, err := http.Get(buoyURL)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer data.Body.Close()
+
+		rStatus := data.StatusCode
+		if rStatus == 200 {
+			fmt.Println("Good ", stationID)
+			fmt.Println()
+		} else {
+			fmt.Println("Bad ", stationID, buoyURL)
+			fmt.Println()
+		}
+	}
+}
