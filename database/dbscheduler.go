@@ -7,31 +7,26 @@ import (
 	"time"
 )
 
-func StartRTBuoyDataIngestion(db *sql.DB) {
-	fmt.Println("Updating Real Time Buoy Data")
-	UpdateRTBuoyDataTable(db, api.NDBCBouyDataURL, api.STATION_ID_FILE)
-
-	for {
-		fmt.Println("Updating Real Time Buoy Data")
-		UpdateRTBuoyDataTable(db, api.NDBCBouyDataURL, api.STATION_ID_FILE)
-		time.Sleep(15 * time.Minute)
-	}
-}
-
-func StartRTWeatherDataIngestion(db *sql.DB) {
-	fmt.Println("Updating Real Time Weather Data")
-	UpdateRTWeatherTable(db)
-
-	for {
-		fmt.Println("Updating Real Time Weather Data")
-		UpdateRTWeatherTable(db)
-		time.Sleep(time.Hour)
-	}
-}
-
 func StartDataIngestion(db *sql.DB) {
 
 	go StartRTBuoyDataIngestion(db)
 	go StartRTWeatherDataIngestion(db)
 
+}
+
+func StartRTBuoyDataIngestion(db *sql.DB) {
+	for {
+		api.FetchNDBCBuoyDataFromStationList(api.NDBCBouyDataURL, api.STATION_ID_FILE)
+		fmt.Println("Updating Real Time Buoy Data")
+		UpdateRTBuoyDataTable(db)
+		time.Sleep(15 * time.Minute)
+	}
+}
+
+func StartRTWeatherDataIngestion(db *sql.DB) {
+	for {
+		fmt.Println("Updating Real Time Weather Data")
+		UpdateRTWeatherTable(db)
+		time.Sleep(time.Hour)
+	}
 }

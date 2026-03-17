@@ -1,2 +1,0 @@
-Working on fetching and adding realtime weather data to 
-to current weather table

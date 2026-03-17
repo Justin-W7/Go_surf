@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+// SaveRawBuoyDataToFile saves the raw HTTP response body of buoy data to a timestamped text file.
+// The file is named using the current time and the provided buoy ID, and is stored in
+// "database/raw_data/NDBC_buoy_data". Any errors encountered during file creation or writing
+// are logged or printed.
 func SaveRawBuoyDataToFile(data *http.Response, id string) {
 	t := time.Now().Format("2006-01-02 15:04:05")
 

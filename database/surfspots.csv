@@ -1,9 +1,9 @@
 id,name,latitude,longitude,city_id,break_type,orientation
-1,Santa Ana River Jetties,33.5947,-117.8801,001,Rivermouth/Beach break,255
-2,56th Street,33.60631,-117.92909,001,Beach break,240
-3,54th Street,33.60547,-117.92772,001,Beach break,240
-4,40th Street,33.60245,-117.92362,001,Jetty/Beach break,235
-5,38th Street,33.60175,-117.92150,001,Beach break,240
-6,Blackies,33.6101,-117.9291,001,Beach break,260
-7,Newport Point,33.5889,-117.9007,001,Beach break,165
-8,The Wedge,33.59252,-117.88228,001,Shore break,150
+1,Santa Ana River Jetties,33.5947,-117.8801,1,Rivermouth/Beach break,255
+2,56th Street,33.60631,-117.92909,1,Beach break,240
+3,54th Street,33.60547,-117.92772,1,Beach break,240
+4,40th Street,33.60245,-117.92362,1,Jetty/Beach break,235
+5,38th Street,33.60175,-117.92150,1,Beach break,240
+6,Blackies,33.6101,-117.9291,1,Beach break,260
+7,Newport Point,33.5889,-117.9007,1,Beach break,165
+8,The Wedge,33.59252,-117.88228,1,Shore break,150
