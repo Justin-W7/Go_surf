@@ -3,12 +3,15 @@
 package api
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"go_surf/models"
+	"go_surf/utils"
 )
 
 // fetchURL performs an HTTP GET request for the given URL and returns
@@ -122,7 +125,7 @@ func FetchHourlyWeatherForecast(url string) ([]byte, error) {
 // FetchWeatherGridForecast retrieves grid-based weather forecast data
 // from a specific NWS url.
 //
-// Paramters:
+// Parameters:
 //   - url: The API endpoint URL for the grid forecast.
 //
 // Returns:
@@ -131,4 +134,73 @@ func FetchHourlyWeatherForecast(url string) ([]byte, error) {
 //   - error: An errif the HTTP request fails.
 func FetchWeatherGridForecast(url string) ([]byte, error) {
 	return fetchURL(url)
+}
+
+// FetchNDBCBuoyDataFromFile makes Get request to the provided url.
+// Stores raw data in a local text file.
+//
+// Parameters:
+//   - url: The API endpoint url for NDBCBouyDataURL
+//   - inputfile: A file pathway that contains the list of station IDs to process.
+//
+// Returns:
+// - none: writes response data to text file
+func FetchNDBCBuoyDataFromStationList(url string, inputfile string) {
+	file, err := os.Open(inputfile)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		stationID := scanner.Text()
+		if stationID == "" {
+			continue
+		}
+
+		buoyURL := fmt.Sprintf(url, stationID)
+		data, err := http.Get(buoyURL)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer data.Body.Close()
+
+		rStatus := data.StatusCode
+		if rStatus == 200 {
+			utils.SaveRawBuoyDataToFile(data, stationID)
+		}
+	}
+}
+
+func CheckNDBCBuoyDataResponse(url string, inputfile string) {
+	file, err := os.Open(inputfile)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		stationID := scanner.Text()
+		if stationID == "" {
+			continue
+		}
+
+		buoyURL := fmt.Sprintf(url, stationID)
+		data, err := http.Get(buoyURL)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer data.Body.Close()
+
+		rStatus := data.StatusCode
+		if rStatus == 200 {
+			fmt.Println("Good ", stationID)
+			fmt.Println()
+		} else {
+			fmt.Println("Bad ", stationID, buoyURL)
+			fmt.Println()
+		}
+	}
 }

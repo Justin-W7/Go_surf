@@ -13,7 +13,8 @@
 
 # Project Files to NOT inlude in repo
 credentials/credentials.go
-
+database/raw_data/
+ToDos.txt
 # Code coverage profiles and other test artifacts
 *.out
 coverage.*
