@@ -1,8 +1,8 @@
 package main
 
 import (
-	"go_surf/database"
-	"go_surf/menu"
+	"go_surf/backend/src/database"
+	"go_surf/backend/src/menu"
 )
 
 func main() {
