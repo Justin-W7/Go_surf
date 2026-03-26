@@ -12,6 +12,7 @@ func StartMenuLoop(db *sql.DB) {
 		printMenu()
 		fmt.Print("> ")
 		fmt.Scan(&input)
+		fmt.Println()
 
 		if input == "q" {
 			break

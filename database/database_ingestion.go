@@ -16,6 +16,7 @@ import (
 	"go_surf/api"
 	"go_surf/models"
 	"go_surf/processing"
+	"go_surf/spacial"
 	"go_surf/utils"
 
 	_ "github.com/lib/pq"
@@ -162,8 +163,8 @@ func UpdateSurfSpotTable(db *sql.DB) {
 	lineNumber := 0
 
 	sqlStmnt, err := db.Prepare(`
-		INSERT INTO surfspot (id, name, latitude, longitude, city_id, break_type, orientation)
-		VALUES($1, $2, $3, $4, $5, $6, $7)		
+		INSERT INTO surfspot (id, name, latitude, longitude, city_id, break_type, orientation, nearest_buoy)
+		VALUES($1, $2, $3, $4, $5, $6, $7, $8)		
 	`)
 	if err != nil {
 		log.Fatal(err)
@@ -192,11 +193,14 @@ func UpdateSurfSpotTable(db *sql.DB) {
 		// convert csv fields to proper types
 		id, err := strconv.Atoi(record[0])
 		lat, err := strconv.ParseFloat(record[2], 64)
-		long, err := strconv.ParseFloat(record[3], 64)
+		lon, err := strconv.ParseFloat(record[3], 64)
 		city_id, err := strconv.Atoi(record[4])
 		orientation, err := strconv.ParseFloat(record[6], 64)
 
-		_, err = sqlStmnt.Exec(id, record[1], lat, long, city_id, record[5], orientation)
+		// find nearest buoy
+		nearest_buoy := spacial.NearestBuoy(lat, lon, db)
+
+		_, err = sqlStmnt.Exec(id, record[1], lat, lon, city_id, record[5], orientation, nearest_buoy)
 		if err != nil {
 			log.Fatalf("line %d: insert failed: %v", lineNumber, err)
 		}
@@ -260,15 +264,22 @@ func UpdateCitiesTable(db *sql.DB) {
 
 // UpdateRTBuoyDataTable updates the real-time buoy data table in the database.
 // The funcion does the following:
-//  1. Reads all the raw data files from the directory api.DATABASE_BUOYS_RAW_DATA.
-//  2. Iterates through each file, gets the buoy id from the file name, and calls
+//  1. Clears table to new data.
+//  2. Reads all the raw data files from the directory api.DATABASE_BUOYS_RAW_DATA.
+//  3. Iterates through each file, gets the buoy id from the file name, and calls
 //     processRTBuoyFile to insert data into the database.
-func UpdateRTBuoyDataTable(db *sql.DB) {
+func UpdateRTBuoyDataTable(db *sql.DB) error {
+	// // Clear table for new data.
+	_, err := db.Exec(`TRUNCATE real_time_buoy_data_points`)
+	if err != nil {
+		return err
+	}
+
 	folder := api.DATABASE_BUOYS_RT_RAW_DATA
 
 	files, err := os.ReadDir(folder)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	for _, file := range files {
@@ -279,13 +290,15 @@ func UpdateRTBuoyDataTable(db *sql.DB) {
 		// convert buoystr to int
 		buoyID, err := strconv.Atoi(buoystr)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		filepath := filepath.Join(folder, name)
 
 		processRTBuoyFile(db, filepath, buoyID)
 	}
+
+	return nil
 }
 
 func processRTBuoyFile(db *sql.DB, filepath string, buoyID int) {
@@ -414,8 +427,8 @@ func insertBuoyData(db *sql.DB, p *models.BuoyDataPoint) error {
 	return nil
 }
 
-func UpdateRTWeatherTable(db *sql.DB) {
-	// for each record in cities table, get latitude and longitude.
+func UpdateRTWeatherTable(db *sql.DB) error {
+	// for each record in cities table get latitude and longitude.
 	rows, err := db.Query("SELECT id, latitude, longitude FROM cities")
 	if err != nil {
 		log.Fatal(err)
@@ -429,47 +442,48 @@ func UpdateRTWeatherTable(db *sql.DB) {
 
 		err = rows.Scan(&id, &lat, &lon)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		// get weather forcast for lat lon.
 		url := fmt.Sprintf(api.NWSWeatherURL, lat, lon)
 		data, err := api.FetchWeatherForecast(url)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		// parse spot weather for hourly forecast url
 		forecast, err := processing.ParseSpotWeather(data)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		hourlyUrl := forecast.Properties.ForecastHourly
 
 		// get hourly forecast
 		rawData, err := api.FetchHourlyWeatherForecast(hourlyUrl)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		// parse raw hourly weather data
 		hourlyForecast, err := processing.ParseHourlyWeatherForecast(rawData)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		// build models.WeatherDataPoint
 		dataPoint, err := parseRTWeatherData(id, &hourlyForecast)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		// insert weather data into database
 		err = insertRTWeatherData(db, dataPoint)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 	}
+	return nil
 }
 
 func parseRTWeatherData(id int, data *models.HourlyWeatherForecast) (*models.WeatherDatapoint, error) {
@@ -537,7 +551,13 @@ func insertRTWeatherData(db *sql.DB, p *models.WeatherDatapoint) error {
 	return nil
 }
 
-func UpdateCurrentSurfConditions(db *sql.DB) {
+func UpdateCurrentSurfConditions(db *sql.DB) error {
+	// Clear table for new data
+	_, err := db.Exec(`TRUNCATE current_surf_spot_conditions`)
+	if err != nil {
+		return err
+	}
+
 	// Get all cities
 	cities, err := db.Query(`SELECT 
 				id, 
@@ -546,13 +566,14 @@ func UpdateCurrentSurfConditions(db *sql.DB) {
 				longitude 
 			FROM cities`)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer cities.Close()
 
 	// Get all weather data
 	weather, err := db.Query(`SELECT 
 				city_id,
+				recorded_at,
 				wind_speed,
 				wind_direction,
 				air_temp_c,
@@ -561,7 +582,7 @@ func UpdateCurrentSurfConditions(db *sql.DB) {
 				observed_at
 			FROM current_weather`)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer weather.Close()
 
@@ -572,7 +593,7 @@ func UpdateCurrentSurfConditions(db *sql.DB) {
 				longitude
 			FROM buoys`)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer buoys.Close()
 
@@ -587,7 +608,7 @@ func UpdateCurrentSurfConditions(db *sql.DB) {
 				watert_degc 
 			FROM real_time_buoy_data_points`)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer buoyData.Close()
 
@@ -597,10 +618,11 @@ func UpdateCurrentSurfConditions(db *sql.DB) {
 				name,
 				latitude,
 				longitude,
-				city_id
+				city_id,
+				nearest_buoy
 			FROM surfspot`)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer spots.Close()
 
@@ -617,7 +639,7 @@ func UpdateCurrentSurfConditions(db *sql.DB) {
 			&c.Longitude,
 		)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		cityMap[c.ID] = c
 	}
@@ -638,7 +660,7 @@ func UpdateCurrentSurfConditions(db *sql.DB) {
 			&w.ObservedAt,
 		)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		weatherMap[w.CityID] = w
 	}
@@ -654,7 +676,7 @@ func UpdateCurrentSurfConditions(db *sql.DB) {
 			&b.Longitude,
 		)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		buoyMap[b.ID] = b
 	}
@@ -674,7 +696,7 @@ func UpdateCurrentSurfConditions(db *sql.DB) {
 			&bd.WaterTempDegC,
 		)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		buoyDataMap[bd.BuoyID] = bd
 	}
@@ -690,37 +712,95 @@ func UpdateCurrentSurfConditions(db *sql.DB) {
 			&s.Latitude,
 			&s.Longitude,
 			&s.CityID,
+			&s.NearestBuoy,
 		)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		surfSpotsMap[s.ID] = s
 	}
+
 	// build CurrentSurfSpotConditions struct
 	// buildCurrentSurfConditions()
-	err = buildCurrentSurfConditions(surfSpotsMap, buoyMap, buoyDataMap, weatherMap)
+	conditions := buildCurrentSurfConditions(surfSpotsMap, buoyMap, buoyDataMap, weatherMap)
 
 	// insert Conditions into table
-	// insertCurrentSurfConditions()
-
-}
-
-func buildCurrentSurfConditions(
-	surfSpots map[int]models.StaticSurfSpot, buoys map[int]models.Buoy,
-	buoyData map[int]models.BuoyData, weather map[int]models.WeatherDatapoint,
-) error {
-
-	// slice to hold *models.CurrentSurfSpotConditions
-	var conditions []*models.CurrentSurfSpotConditions
-
-	// Find the buoy that is closest to each surf spot.
-	// Use that buoys' buoyData for CurrentCondition
-	for _, spot := range surfSpots {
-
+	for _, p := range conditions {
+		err = insertCurrentSurfConditions(p, db)
+	}
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func insertCurrentSurfConditions() {
+func buildCurrentSurfConditions(
+	surfSpots map[int]models.StaticSurfSpot, buoys map[int]models.Buoy,
+	buoyData map[int]models.BuoyData, weather map[int]models.WeatherDatapoint,
+) []*models.CurrentSurfSpotConditions {
+
+	// slice to hold *models.CurrentSurfSpotConditions
+	var conditions []*models.CurrentSurfSpotConditions
+
+	for _, spot := range surfSpots {
+		buoy := buoys[spot.NearestBuoy]
+		bData, ok := buoyData[buoy.ID]
+		if !ok {
+			continue
+		}
+		wData := weather[spot.CityID]
+
+		// build models.CurrentSurfSpotConditions
+		p := &models.CurrentSurfSpotConditions{
+			SpotId:          spot.ID,
+			RecordedAt:      bData.RecordedAt,
+			DomSwellHeightM: bData.WaveHeightM,
+			DomSwellDir:     bData.MeanWaveDirectionDegT,
+			WindSpeedMph:    wData.WindSpeed,
+			WindDirection:   wData.WindDirection,
+			AirTempDegC:     wData.AirTemp,
+			WaterTempDegC:   bData.WaterTempDegC,
+			Precipitation:   wData.Precipitation,
+			CloudCoverage:   wData.CloudCoverage,
+		}
+
+		conditions = append(conditions, p)
+	}
+
+	return conditions
+}
+
+func insertCurrentSurfConditions(p *models.CurrentSurfSpotConditions, db *sql.DB) error {
+	_, err := db.Exec(`
+			INSERT INTO current_surf_spot_conditions (
+			spot_id,
+			recorded_at,
+			dom_swell_height_m,
+			dom_swell_dir,
+			wind_speed_mph,
+			wind_direction,
+			air_temp_deg_c,
+			water_temp_deg_c,
+			precipitation,
+			cloud_coverage
+			)
+		Values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+	`,
+		p.SpotId,
+		p.RecordedAt,
+		p.DomSwellHeightM,
+		p.DomSwellDir,
+		p.WindSpeedMph,
+		p.WindDirection,
+		p.AirTempDegC,
+		p.WaterTempDegC,
+		p.Precipitation,
+		p.CloudCoverage,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

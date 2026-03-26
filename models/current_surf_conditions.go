@@ -3,17 +3,17 @@ package models
 import "time"
 
 type CurrentSurfSpotConditions struct {
-	ID                    int
-	SpotId                int
-	RecordedAt            time.Time
-	DomSwellHeightM       *float64 // from buoy data
-	DomSwellDir           *float64 // from buoy data
-	WindSpeedMetersPerSec *float64 // from city weather data
-	WindDirectionDegT     *float64 // from city weather data
-	AirTempDegC           *float64 // from city weather data
-	WaterTempDegC         *float64 // from buoy data
-	Precipitation         *float64 // from city weather data
-	CloudCoverage         *string  // from city weather data
+	ID              int
+	SpotId          int
+	RecordedAt      time.Time
+	DomSwellHeightM *float64 // from buoy data
+	DomSwellDir     *float64 // from buoy data
+	WindSpeedMph    *string  // from city weather data
+	WindDirection   *string  // from city weather data
+	AirTempDegC     *float64 // from city weather data
+	WaterTempDegC   *float64 // from buoy data
+	Precipitation   *float64 // from city weather data
+	CloudCoverage   *string  // from city weather data
 }
 
 type Buoy struct {
@@ -25,11 +25,11 @@ type Buoy struct {
 type BuoyData struct {
 	BuoyID                int
 	RecordedAt            time.Time
-	WaveHeightM           float64
-	DominantWavePeriodSec float64
-	AvgWavePeriodSec      float64
-	MeanWaveDirectionDegT float64
-	WaterTempDegC         float64
+	WaveHeightM           *float64
+	DominantWavePeriodSec *float64
+	AvgWavePeriodSec      *float64
+	MeanWaveDirectionDegT *float64
+	WaterTempDegC         *float64
 }
 
 type City struct {
@@ -40,9 +40,10 @@ type City struct {
 }
 
 type StaticSurfSpot struct {
-	ID        int
-	Name      string
-	Latitude  float64
-	Longitude float64
-	CityID    int
+	ID          int
+	Name        string
+	Latitude    float64
+	Longitude   float64
+	CityID      int
+	NearestBuoy int
 }
