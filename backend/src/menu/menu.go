@@ -3,7 +3,7 @@ package menu
 import (
 	"database/sql"
 	"fmt"
-	"go_surf/database"
+	"go_surf/backend/src/database"
 )
 
 func StartMenuLoop(db *sql.DB) {

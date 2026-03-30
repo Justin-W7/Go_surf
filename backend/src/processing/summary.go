@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"go_surf/models"
-	"go_surf/utils"
+	"go_surf/backend/src/models"
+	"go_surf/backend/src/utils"
 )
 
 func SummarizeTodaysForecast(forecast []models.SurfForecast) []models.SumTodaysForecast {

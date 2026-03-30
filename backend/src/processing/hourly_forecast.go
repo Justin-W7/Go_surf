@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"go_surf/api"
-	"go_surf/models"
+	"go_surf/backend/src/api"
+	"go_surf/backend/src/models"
 )
 
 // AppendHourlyWeatherForecasts appends hourly weather forecasts to

@@ -3,7 +3,7 @@ package processing
 import (
 	"strings"
 
-	"go_surf/models"
+	"go_surf/backend/src/models"
 )
 
 // SortAMPMForecasts filters a slice of SurfSpot models based on DateLocal.HH value.

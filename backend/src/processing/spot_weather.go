@@ -1,8 +1,8 @@
 package processing
 
 import (
-	"go_surf/api"
-	"go_surf/models"
+	"go_surf/backend/src/api"
+	"go_surf/backend/src/models"
 )
 
 // AppendSpotWeather appends WeatherPoint data to models.SurfForecast.SpotWeather

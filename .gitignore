@@ -12,8 +12,9 @@
 *.test
 
 # Project Files to NOT inlude in repo
-credentials/credentials.go
-database/raw_data/
+backend/src/credentials/credentials.go
+backend/src/database/raw_data/
+
 ToDos.txt
 # Code coverage profiles and other test artifacts
 *.out

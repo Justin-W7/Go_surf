@@ -10,8 +10,9 @@ import (
 	"os"
 	"time"
 
-	"go_surf/models"
-	"go_surf/utils"
+	constant "go_surf/backend/src/config"
+	"go_surf/backend/src/models"
+	"go_surf/backend/src/utils"
 )
 
 // fetchURL performs an HTTP GET request for the given URL and returns
@@ -71,10 +72,10 @@ func FetchSpitcastForecast(spots []models.SurfSpot) ([][]byte, error) {
 	locations := make([][]byte, 0)
 
 	for i := range spots {
-		url := fmt.Sprintf(SpitcastForecastURL, spots[i].SpotID, year, month, day)
+		url := fmt.Sprintf(constant.SpitcastForecastURL, spots[i].SpotID, year, month, day)
 		data, err := fetchURL(url)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to fetch SpitcastForecast %s, %w", url, err)
 		}
 		locations = append(locations, data)
 	}
@@ -92,7 +93,7 @@ func FetchSpitcastForecast(spots []models.SurfSpot) ([][]byte, error) {
 //   - []byte: A byte slice containing the raw response body.
 //   - error: An error if the HTTP request fails.
 func FetchWeatherPoint(lat float64, long float64) ([]byte, error) {
-	url := fmt.Sprintf(NWSWeatherURL, long, lat)
+	url := fmt.Sprintf(constant.NWSWeatherURL, long, lat)
 	return fetchURL(url)
 }
 
@@ -145,10 +146,10 @@ func FetchWeatherGridForecast(url string) ([]byte, error) {
 //
 // Returns:
 // - none: writes response data to text file
-func FetchNDBCBuoyDataFromStationList(url string, inputfile string) {
+func FetchNDBCBuoyDataFromStationList(url string, inputfile string) error {
 	file, err := os.Open(inputfile)
 	if err != nil {
-		fmt.Println(err)
+		return fmt.Errorf("%v:%w", "FetchNDBCBuoyDataFRomStationList error", err)
 	}
 	defer file.Close()
 
@@ -162,7 +163,8 @@ func FetchNDBCBuoyDataFromStationList(url string, inputfile string) {
 		buoyURL := fmt.Sprintf(url, stationID)
 		data, err := http.Get(buoyURL)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Failed to fetch", buoyURL, "Error: ", err)
+			continue
 		}
 		defer data.Body.Close()
 
@@ -171,12 +173,13 @@ func FetchNDBCBuoyDataFromStationList(url string, inputfile string) {
 			utils.SaveRawBuoyDataToFile(data, stationID)
 		}
 	}
+	return nil
 }
 
-func CheckNDBCBuoyDataResponse(url string, inputfile string) {
+func CheckNDBCBuoyDataResponse(url string, inputfile string) error {
 	file, err := os.Open(inputfile)
 	if err != nil {
-		fmt.Println(err)
+		return fmt.Errorf("%v:%w", "FetchNDBCBuoyDataFRomStationList error", err)
 	}
 	defer file.Close()
 
@@ -192,7 +195,6 @@ func CheckNDBCBuoyDataResponse(url string, inputfile string) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		defer data.Body.Close()
 
 		rStatus := data.StatusCode
 		if rStatus == 200 {
@@ -202,5 +204,12 @@ func CheckNDBCBuoyDataResponse(url string, inputfile string) {
 			fmt.Println("Bad ", stationID, buoyURL)
 			fmt.Println()
 		}
+		data.Body.Close()
 	}
+
+	if err := scanner.Err(); err != nil {
+		return fmt.Errorf("%v:%w", "CheckNDBCBuoyDataResponse", err)
+	}
+
+	return nil
 }

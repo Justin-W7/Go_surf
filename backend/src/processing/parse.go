@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"go_surf/models"
+	"go_surf/backend/src/models"
 )
 
 // ParseSpotWeather parses raw JSON data into a SpotWeather model.

@@ -3,8 +3,9 @@ package menu
 import (
 	"database/sql"
 	"fmt"
-	"go_surf/api"
-	"go_surf/database"
+	"go_surf/backend/src/api"
+	constant "go_surf/backend/src/config"
+	"go_surf/backend/src/database"
 )
 
 // DatabaseMenu is the cli for static database updates.
@@ -24,6 +25,7 @@ func DatabaseMenu(db *sql.DB) {
 		fmt.Println("i - MOVE current rt buoy data to cold folder.")
 		fmt.Println("j - TEST UpdateCurrentSurfConditions().")
 		fmt.Println()
+		fmt.Println("q - BACK")
 		fmt.Println("------------------------------------------------------------")
 		fmt.Print("> ")
 		fmt.Scan(&i)
@@ -37,7 +39,7 @@ func DatabaseMenu(db *sql.DB) {
 		case "c":
 			database.UpdateCitiesTable(db)
 		case "d":
-			api.FetchNDBCBuoyDataFromStationList(api.NDBCBouyDataURL, api.STATION_ID_FILE)
+			api.FetchNDBCBuoyDataFromStationList(constant.NDBCBouyDataURL, constant.STATION_ID_FILE)
 		case "e":
 			database.UpdateRTBuoyDataTable(db)
 		case "f":

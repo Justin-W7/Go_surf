@@ -13,11 +13,12 @@ import (
 	"strings"
 	"time"
 
-	"go_surf/api"
-	"go_surf/models"
-	"go_surf/processing"
-	"go_surf/spacial"
-	"go_surf/utils"
+	"go_surf/backend/src/api"
+	constant "go_surf/backend/src/config"
+	"go_surf/backend/src/models"
+	"go_surf/backend/src/processing"
+	"go_surf/backend/src/spacial"
+	"go_surf/backend/src/utils"
 
 	_ "github.com/lib/pq"
 )
@@ -54,10 +55,10 @@ func DisconnectDatabase(db *sql.DB) {
 
 // MoveOldBuoyData moves old buoy data from active folder to cold folder.
 func MoveOldBuoyData() {
-	srcDir := api.DATABASE_BUOYS_RT_RAW_DATA
-	dstDir := api.OLD_BUOY_DATA_PATH
+	srcDir := constant.DATABASE_BUOYS_RT_RAW_DATA
+	dstDir := constant.OLD_BUOY_DATA_PATH
 
-	files, err := os.ReadDir(api.DATABASE_BUOYS_RT_RAW_DATA)
+	files, err := os.ReadDir(constant.DATABASE_BUOYS_RT_RAW_DATA)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -102,7 +103,7 @@ func ClearRTData(db *sql.DB) {
 // UpdateBuoyTable reads buoy data from a CSV file (path defined in api.DATABASE_BUOYS_FILE)
 // and updates the "buoys" table in the database. The function:
 func UpdateBuoyTable(db *sql.DB) {
-	file, err := os.Open(api.DATABASE_BUOYS_FILE)
+	file, err := os.Open(constant.DATABASE_BUOYS_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -153,7 +154,7 @@ func UpdateBuoyTable(db *sql.DB) {
 // UpdateSurfSpotTable reads surf spot data from a CSV file (path defined in api.DATABASE_SURFSPOTS_FILE)
 // and updates the "surfspot" table in the database.
 func UpdateSurfSpotTable(db *sql.DB) {
-	file, err := os.Open(api.DATABASE_SURFSPOTS_FILE)
+	file, err := os.Open(constant.DATABASE_SURFSPOTS_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -211,7 +212,7 @@ func UpdateSurfSpotTable(db *sql.DB) {
 // UpdateCitiesTable reads city data from a CSV file (path defined in api.DATABASE_CITIES_FILE)
 // and updates the "cities" table in the database.
 func UpdateCitiesTable(db *sql.DB) {
-	file, err := os.Open(api.DATABASE_CITIES_FILE)
+	file, err := os.Open(constant.DATABASE_CITIES_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -269,13 +270,13 @@ func UpdateCitiesTable(db *sql.DB) {
 //  3. Iterates through each file, gets the buoy id from the file name, and calls
 //     processRTBuoyFile to insert data into the database.
 func UpdateRTBuoyDataTable(db *sql.DB) error {
-	// // Clear table for new data.
+	// Clear table for new data.
 	_, err := db.Exec(`TRUNCATE real_time_buoy_data_points`)
 	if err != nil {
 		return err
 	}
 
-	folder := api.DATABASE_BUOYS_RT_RAW_DATA
+	folder := constant.DATABASE_BUOYS_RT_RAW_DATA
 
 	files, err := os.ReadDir(folder)
 	if err != nil {
@@ -353,8 +354,8 @@ func parseRTBuoyLine(line string, buoyID int) (*models.BuoyDataPoint, error) {
 	dominantWavePeriod, _ := parseDataFloat(data[9])
 	avgWavePeriod, _ := parseDataFloat(data[10])
 	meanWaveDirection, _ := parseDataFloat(data[11])
-	airTemperature, _ := parseDataFloat(data[14])
-	waterTemperature, _ := parseDataFloat(data[15])
+	airTemperature, _ := parseDataFloat(data[13])
+	waterTemperature, _ := parseDataFloat(data[14])
 
 	// build models.BuoyDataPoint struct
 	p := &models.BuoyDataPoint{
@@ -428,6 +429,12 @@ func insertBuoyData(db *sql.DB, p *models.BuoyDataPoint) error {
 }
 
 func UpdateRTWeatherTable(db *sql.DB) error {
+	// Clear table for new data.
+	_, err := db.Exec(`TRUNCATE current_weather`)
+	if err != nil {
+		return err
+	}
+
 	// for each record in cities table get latitude and longitude.
 	rows, err := db.Query("SELECT id, latitude, longitude FROM cities")
 	if err != nil {
@@ -446,7 +453,7 @@ func UpdateRTWeatherTable(db *sql.DB) error {
 		}
 
 		// get weather forcast for lat lon.
-		url := fmt.Sprintf(api.NWSWeatherURL, lat, lon)
+		url := fmt.Sprintf(constant.NWSWeatherURL, lat, lon)
 		data, err := api.FetchWeatherForecast(url)
 		if err != nil {
 			return err

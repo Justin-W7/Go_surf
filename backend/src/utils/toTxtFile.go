@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	constant "go_surf/backend/src/config"
 	"io"
 	"log"
 	"net/http"
@@ -18,7 +19,7 @@ func SaveRawBuoyDataToFile(data *http.Response, id string) {
 	t := time.Now().Format("2006-01-02 15:04:05")
 
 	fileName := fmt.Sprintf("%s_buoydata_%s.txt", t, id)
-	fullPath := filepath.Join("database/raw_data/NDBC_buoy_data", fileName)
+	fullPath := filepath.Join(constant.DATABASE_BUOYS_RT_RAW_DATA, fileName)
 
 	file, err := os.Create(fullPath)
 	if err != nil {
