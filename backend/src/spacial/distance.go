@@ -20,7 +20,7 @@ func NearestBuoy(lat, lon float64, db *sql.DB) int {
 	var id int
 	var bLat float64
 	var bLon float64
-	var nearest_buoy_id int
+	var nearestBuoyId int
 	var current float64
 	nearest := math.MaxFloat64
 
@@ -38,12 +38,12 @@ func NearestBuoy(lat, lon float64, db *sql.DB) int {
 
 		if current < nearest {
 			nearest = current
-			nearest_buoy_id = id
+			nearestBuoyId = id
 		}
 		fmt.Println("buoy_id: ", id, "   ", nearest)
 	}
 
-	return nearest_buoy_id
+	return nearestBuoyId
 }
 
 // haversine function finds the distance bewteen two
