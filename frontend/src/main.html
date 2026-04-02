@@ -8,30 +8,30 @@
 </head>
 
 <body>
-
     <!-- NAVBAR -->
     <header class="navbar">
         <h1>Go Surf</h1>
-        <nav>
-            <a href="#">Forecast</a>
-            <a href="#">Charts</a>
-            <a href="#">Locations</a>
-            <a href="#">Blog</a>
-        </nav>
     </header>
 
     <!-- HERO -->
     <section class="hero">
-
-        <select id="locationSelect">
+        <h2>Find Forecast</h2>
+        <select onchange="goToPage(this.value)">
             <option value="">Select Location</option>
-            <option>Newport Beach, CA</option>
+            <option value="newportbeach_forecast.html">Newport Beach, CA</option>
         </select>
+        <script>
+            function goToPage(page) {
+                if (page) {
+                    window.location.href = page
+                }
+            }
+        </script>
     </section>
 
     <!-- FOOTER -->
     <footer>
-        <p>© 2026 Surf Captain Mock</p>
+        <p>© 2026 Go Surf</p>
     </footer>
 
     <script src="script.js"></script>
