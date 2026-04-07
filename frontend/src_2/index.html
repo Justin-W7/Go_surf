@@ -11,16 +11,34 @@
 <body>
     <!-- Header and navbar -->
     <div class="header">
-        <div class="topnav">
+        <div class="spacer-left"></div>
+
+        <div class="nav-center">
             <button class="navbutton">Home</button>
             <button class="navbutton">Forecasts</button>
             <button class="navbutton">About</button>
         </div>
+
+        <div class="nav-right">
+            <button class="navbutton user-icon">
+                <img src="icons/user-logo.svg" alt="user icon" width="20" height="20">
+            </button>
+        </div>
     </div>
+
     <!-- main container -->
     <div class="main">
-       <div class="sidebar"></div>
-       <div class="content"></div> 
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">Location</div>
+                <div class="location-search">
+                    <input type="text" placeholder="Search..." />
+                </div>
+            </div>
+        </div>
+
+        <!-- main container -->
+        <div class="content"></div>
     </div>
 
 
