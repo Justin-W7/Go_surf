@@ -99,7 +99,7 @@ body {
     gap: 5px;
 }
 
-
+/*---------*/
 /* sidebar */
 .sidebar {
     display: flex;
@@ -135,13 +135,58 @@ body {
     box-sizing: border-box;
 }
 
+/*---------*/
 /* content */
 .content {
     display: flex;
+    flex-direction: column;
+    min-width: 0;
     flex: 3;
 
     border-radius: 15px;
     border: 2px solid rgb(242, 242, 242);
 
     background-color: white;
+}
+
+.content-header {
+    display: flex;
+    flex-direction: row;
+    min-width: 0;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0px 10px 0px 10px;
+    border-bottom: 1px solid rgb(242, 242, 242);
+    font-family: Arial, Helvetica;
+    font-size: 12px;
+    font-weight: 100;
+    color: rgb(68, 68, 68);
+}
+
+.location-surf-spots {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: #9f9f9f;
+    /*scrollbar-color: rgb(242, 242, 242); */
+}
+
+.location-surf-spots::-webkit-scrollbar {
+    color: #9f9f9f;
+    height: 10px;
+}
+
+.location-surf-spots ul {
+    display: flex;
+    gap: 16px;
+    list-style: none;
+}
+
+.location-surf-spots ul li {
+    flex: 0 0 auto;
+    white-space: nowrap;
 }
