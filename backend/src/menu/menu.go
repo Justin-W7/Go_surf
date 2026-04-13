@@ -27,6 +27,7 @@ func printMenu() {
 	fmt.Println("--- Enter one of the options below ---")
 	fmt.Println()
 	fmt.Println("a - DATABASE MENU")
+	fmt.Println("b - API MENU")
 	fmt.Println("b - START data ingestion")
 	fmt.Println("h - SHOW HELP")
 	fmt.Println("q - QUIT PROGRAM")
@@ -39,6 +40,8 @@ func selectMenuItem(i string, db *sql.DB) {
 	case "a":
 		DatabaseMenu(db)
 	case "b":
+		ApiMenu(db)
+	case "c":
 		database.StartDataIngestion(db)
 	case "h":
 		fmt.Println("h - place holder.")

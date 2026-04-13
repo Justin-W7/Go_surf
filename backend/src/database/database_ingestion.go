@@ -199,9 +199,9 @@ func UpdateSurfSpotTable(db *sql.DB) {
 		orientation, err := strconv.ParseFloat(record[6], 64)
 
 		// find nearest buoy
-		nearest_buoy := spacial.NearestBuoy(lat, lon, db)
+		nearestBuoy := spacial.NearestBuoy(lat, lon, db)
 
-		_, err = sqlStmnt.Exec(id, record[1], lat, lon, city_id, record[5], orientation, nearest_buoy)
+		_, err = sqlStmnt.Exec(id, record[1], lat, lon, city_id, record[5], orientation, nearestBuoy)
 		if err != nil {
 			log.Fatalf("line %d: insert failed: %v", lineNumber, err)
 		}
@@ -746,7 +746,6 @@ func buildCurrentSurfConditions(
 	surfSpots map[int]models.StaticSurfSpot, buoys map[int]models.Buoy,
 	buoyData map[int]models.BuoyData, weather map[int]models.WeatherDatapoint,
 ) []*models.CurrentSurfSpotConditions {
-
 	// slice to hold *models.CurrentSurfSpotConditions
 	var conditions []*models.CurrentSurfSpotConditions
 
