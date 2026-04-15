@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"go_surf/backend/src/api"
-	constant "go_surf/backend/src/config"
+	"go_surf/backend/src/config"
 	"sync"
 	"time"
 )
@@ -44,7 +44,8 @@ func tickerRunner(interval time.Duration, job func()) {
 
 func updateBuoyData(db *sql.DB) error {
 	fmt.Println("Updating real time buoy data.")
-	err := api.FetchNDBCBuoyDataFromStationList(constant.NDBCBouyDataURL, constant.STATION_ID_FILE)
+
+	err := api.FetchNDBCBuoyDataFromStationList(config.NDBCBouyDataURL, config.STATION_ID_FILE)
 	if err != nil {
 		return fmt.Errorf("%v:%w", "updateBuoyData", err)
 	}

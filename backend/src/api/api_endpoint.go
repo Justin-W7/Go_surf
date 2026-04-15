@@ -117,7 +117,8 @@ func (h *Handler) getSpotConditionsCurrent(c *gin.Context) {
 
 	var conditions models.CurrentSurfSpotConditions
 	err = h.DB.QueryRow(`
-		SELECT 
+		SELECT
+			id,
 			spot_id, 
 			recorded_at, 
 			dom_swell_height_m, 
@@ -127,10 +128,12 @@ func (h *Handler) getSpotConditionsCurrent(c *gin.Context) {
 			air_temp_deg_c,
 			water_temp_deg_c,
 			precipitation,
-			cloud_coverage
+			cloud_coverage,
+			domwp_sec
 		FROM current_surf_spot_conditions
 		WHERE spot_id = $1
 	`, surfSpotID).Scan(
+		&conditions.ID,
 		&conditions.SpotId,
 		&conditions.RecordedAt,
 		&conditions.DomSwellHeightM,
@@ -141,8 +144,21 @@ func (h *Handler) getSpotConditionsCurrent(c *gin.Context) {
 		&conditions.WaterTempDegC,
 		&conditions.Precipitation,
 		&conditions.CloudCoverage,
+		&conditions.DominantWavePeriodSec,
 	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "no surf conditions found for spot",
+			})
+			return
+		}
 
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 	c.JSON(http.StatusOK, conditions)
 }
 
@@ -158,5 +174,7 @@ func StartRouter(db *sql.DB) {
 	router.GET("/surfspots/:cityID", h.getSurfSpots)
 	router.GET("/surfforecast/current/:spotID", h.getSpotConditionsCurrent)
 
-	router.Run(":8080")
+	router.Static("/gosurf", "./frontend/src_2")
+
+	router.Run("0.0.0.0:8080")
 }

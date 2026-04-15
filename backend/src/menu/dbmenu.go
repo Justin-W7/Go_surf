@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"go_surf/backend/src/api"
-	constant "go_surf/backend/src/config"
+	"go_surf/backend/src/config"
 	"go_surf/backend/src/database"
 )
 
@@ -39,7 +39,7 @@ func DatabaseMenu(db *sql.DB) {
 		case "c":
 			database.UpdateCitiesTable(db)
 		case "d":
-			api.FetchNDBCBuoyDataFromStationList(constant.NDBCBouyDataURL, constant.STATION_ID_FILE)
+			api.FetchNDBCBuoyDataFromStationList(config.Path(config.NDBCBouyDataURL), config.Path(config.STATION_ID_FILE))
 		case "e":
 			database.UpdateRTBuoyDataTable(db)
 		case "f":

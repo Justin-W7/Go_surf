@@ -14,7 +14,7 @@ contentHeaderScroll.addEventListener("wheel", (e) => {
 
 // loads cities list on sidebar.  
 function fetchCitiesList() {
-    fetch("http://localhost:8080/cities")
+    fetch("http://192.168.1.232:8080/cities")
         .then(response => response.json())
         .then(data => {
             const sidebar = document.querySelector(".sidebar-content");
@@ -47,7 +47,7 @@ function fetchCitiesList() {
 function fetchSurfSpots(cityID) {
     console.log("fetching surfspots - cityID - ", cityID);
 
-    fetch(`http://localhost:8080/surfspots/${cityID}`)
+    fetch(`http://192.168.1.232:8080/surfspots/${cityID}`)
         .then(response => response.json())
         .then(data => {
             const surfSpotList = document.querySelector(".surf-spot-list");
@@ -78,7 +78,7 @@ function fetchSurfSpots(cityID) {
 function fetchCurrentSurfConditions(spotID, spotName) {
     console.log("fetching current surf conditions -", spotID);
 
-    fetch(`http://localhost:8080/surfforecast/current/${spotID}`)
+    fetch(`http://192.168.1.232:8080/surfforecast/current/${spotID}`)
         .then(response => response.json())
         .then(data => {
             const contentMain = document.querySelector(".content-main");
@@ -97,11 +97,11 @@ function fetchCurrentSurfConditions(spotID, spotName) {
 
             overview.innerHTML = `
                 <h3>${spotName} - Current Conditions</h3>
-                <p> Swell Height: ${swellHeightft} ft</p> 
+                <p> Swell Height: ${swellHeightft} ft @ ${data.DominantWavePeriodSec} sec</p> 
                 <p> Swell Direction: ${data.DomSwellDir}°</p>
                 <p> Water Temp: ${waterTemp} °f</p>
                 <p> Air Temp: ${airTemp} °f</p>
-                <p> Wind: ${data.WindSpeedMph} - ${data.WindDirection}</p>
+                <p> Wind: ${data.WindSpeedMph} - (${data.WindDirection})</p>
                 <p> Cloud Coverage: ${data.CloudCoverage}</p>
                 <p> Chance of Precipitation: ${data.Precipitation}</p>
             `;

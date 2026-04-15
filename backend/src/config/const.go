@@ -29,7 +29,7 @@ const (
 // Environment variable for relative file paths
 var root = os.Getenv("PROJECT_ROOT")
 
-// Path build relative file paths for const variables in config package.
+// Path builds relative file paths for const variables in config package.
 func Path(relative string) string {
 	return filepath.Join(root, relative)
 }
