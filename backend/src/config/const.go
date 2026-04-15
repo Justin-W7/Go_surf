@@ -1,5 +1,10 @@
 package config
 
+import (
+	"os"
+	"path/filepath"
+)
+
 // URLs
 const (
 	SpitcastSpotURL     = "https://api.spitcast.com/api/spot"
@@ -20,3 +25,11 @@ const (
 	DATABASE_BUOYS_RT_RAW_DATA = "backend/src/database/raw_data/NDBC_buoy_data"
 	OLD_BUOY_DATA_PATH         = "backend/src/database/raw_data/old_NDBC_buoy_data"
 )
+
+// Environment variable for relative file paths
+var root = os.Getenv("PROJECT_ROOT")
+
+// Path build relative file paths for const variables in config package.
+func Path(relative string) string {
+	return filepath.Join(root, relative)
+}

@@ -1,4 +1,4 @@
 id, name, latitude, longitude, country, state, county
 001,Newport Beach,33.628342,-117.927933,United States,California,Orange
-002,Huntington Beach,33.66126, -117.99858,United States,California,Orange
-003,Laguna Beach,33.54342, -117.78525,United States,California,Orange
+002,Huntington Beach,33.66126,-117.99858,United States,California,Orange
+003,Laguna Beach,33.54342,-117.78525,United States,California,Orange

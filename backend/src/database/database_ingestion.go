@@ -55,8 +55,8 @@ func DisconnectDatabase(db *sql.DB) {
 
 // MoveOldBuoyData moves old buoy data from active folder to cold folder.
 func MoveOldBuoyData() {
-	srcDir := config.DATABASE_BUOYS_RT_RAW_DATA
-	dstDir := config.OLD_BUOY_DATA_PATH
+	srcDir := config.Path(config.DATABASE_BUOYS_RT_RAW_DATA)
+	dstDir := config.Path(config.OLD_BUOY_DATA_PATH)
 
 	files, err := os.ReadDir(config.DATABASE_BUOYS_RT_RAW_DATA)
 	if err != nil {
@@ -103,7 +103,9 @@ func ClearRTData(db *sql.DB) {
 // UpdateBuoyTable reads buoy data from a CSV file (path defined in api.DATABASE_BUOYS_FILE)
 // and updates the "buoys" table in the database. The function:
 func UpdateBuoyTable(db *sql.DB) {
-	file, err := os.Open(config.DATABASE_BUOYS_FILE)
+	filepath := config.Path(config.DATABASE_BUOYS_FILE)
+
+	file, err := os.Open(filepath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -154,7 +156,9 @@ func UpdateBuoyTable(db *sql.DB) {
 // UpdateSurfSpotTable reads surf spot data from a CSV file (path defined in api.DATABASE_SURFSPOTS_FILE)
 // and updates the "surfspot" table in the database.
 func UpdateSurfSpotTable(db *sql.DB) {
-	file, err := os.Open(config.DATABASE_SURFSPOTS_FILE)
+	filepath := config.Path(config.DATABASE_SURFSPOTS_FILE)
+
+	file, err := os.Open(filepath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -211,10 +215,12 @@ func UpdateSurfSpotTable(db *sql.DB) {
 
 // UpdateCitiesTable reads city data from a CSV file (path defined in api.DATABASE_CITIES_FILE)
 // and updates the "cities" table in the database.
-func UpdateCitiesTable(db *sql.DB) {
-	file, err := os.Open(config.DATABASE_CITIES_FILE)
+func UpdateCitiesTable(db *sql.DB) error {
+	filepath := config.Path(config.DATABASE_CITIES_FILE)
+
+	file, err := os.Open(filepath)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Could not open config.DATABASE_CITIES_FILE: ", err)
 	}
 	defer file.Close()
 
@@ -261,6 +267,7 @@ func UpdateCitiesTable(db *sql.DB) {
 		}
 		lineNumber++
 	}
+	return nil
 }
 
 // UpdateRTBuoyDataTable updates the real-time buoy data table in the database.
@@ -276,7 +283,7 @@ func UpdateRTBuoyDataTable(db *sql.DB) error {
 		return err
 	}
 
-	folder := config.DATABASE_BUOYS_RT_RAW_DATA
+	folder := config.Path(config.DATABASE_BUOYS_RT_RAW_DATA)
 
 	files, err := os.ReadDir(folder)
 	if err != nil {
@@ -464,13 +471,11 @@ func UpdateRTWeatherTable(db *sql.DB) error {
 		if err != nil {
 			return fmt.Errorf("ParseSpotWeather: failed to parse weather forecast data: %w", err)
 		}
-		fmt.Println(forecast)
 
 		hourlyUrl := forecast.Properties.ForecastHourly
 
 		// get hourly forecast
-		// rawData, err := api.FetchHourlyWeatherForecast(hourlyUrl)
-		rawData, err := api.FetchURL(hourlyUrl)
+		rawData, err := api.FetchHourlyWeatherForecast(hourlyUrl)
 		if err != nil {
 			return fmt.Errorf("Error 1: %w", err)
 		}
