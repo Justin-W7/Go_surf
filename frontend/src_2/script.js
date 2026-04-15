@@ -12,35 +12,6 @@ contentHeaderScroll.addEventListener("wheel", (e) => {
     contentHeaderScroll.scrollLeft += e.deltaY;  // horizontal scroll
 });
 
-function fetchSurfSpots(cityID) {
-    console.log("fetching surfspots - cityID - ", cityID)
-    fetch(`http://localhost:8080/surfspots/${cityID}`)
-        .then(response => response.json())
-        .then(data => {
-            const surfSpotList = document.querySelector(".surf-spot-list");
-            surfSpotList.innerHTML = "";
-
-            data.forEach(spot => {
-                const button = document.createElement("button");
-                button.className = "spot-button";
-                button.textContent = `${spot.Name}`;
-                button.dataset.cityID = `${spot.cityID}`
-
-                button.addEventListener(`click`, function () {
-                    console.log(".surf-spot-list clicked- ", button.textContent);
-                });
-
-                surfSpotList.appendChild(button);
-
-                // animate after paint
-                requestAnimationFrame(() => {
-                    button.classList.add("show");
-                });
-            });
-        });
-
-};
-
 // loads cities list on sidebar.  
 function fetchCitiesList() {
     fetch("http://localhost:8080/cities")
@@ -65,5 +36,62 @@ function fetchCitiesList() {
         })
         .catch(error => console.error('Error:', error));
 };
+
+// loads surfspots into main content header.
+// Parent child relationship from city -> surfspots.
+function fetchSurfSpots(cityID) {
+    console.log("fetching surfspots - cityID - ", cityID);
+
+    fetch(`http://localhost:8080/surfspots/${cityID}`)
+        .then(response => response.json())
+        .then(data => {
+            const surfSpotList = document.querySelector(".surf-spot-list");
+            surfSpotList.innerHTML = "";
+
+            data.forEach(spot => {
+                const button = document.createElement("button");
+                // setting class name for css manipulation.
+                button.className = "spot-button";
+                button.textContent = spot.name;
+                button.dataset.cityID = spot.cityId;
+
+                button.addEventListener(`click`, function () {
+                    console.log(".surf-spot-list clicked- ", button.textContent);
+                    fetchCurrentSurfConditions(spot.id, spot.name);
+                });
+
+                surfSpotList.appendChild(button);
+
+                // animate after paint
+                requestAnimationFrame(() => {
+                    button.classList.add("show");
+                });
+            });
+        });
+};
+
+function fetchCurrentSurfConditions(spotID, spotName) {
+    console.log("fetching current surf conditions -", spotID);
+
+    fetch(`http://localhost:8080/surfforecast/current/${spotID}`)
+        .then(response => response.json())
+        .then(data => {
+            const contentMain = document.querySelector(".content-main");
+            contentMain.innerHTML = "";
+
+            // conditions overview
+            const overview = document.createElement("div");
+            overview.className = ".surf-conditions-overview";
+
+            overview.innerHTML = `
+                <h3>${spotName}</p>
+                <h4>${data.DomSwellHeightM}m @ ${data.DomSwellDir} deg</h2>
+            `;
+
+            contentMain.appendChild(overview);
+        })
+        .catch(error => console.error('Error:', error));
+};
+
 
 document.addEventListener("DOMContentLoaded", fetchCitiesList);

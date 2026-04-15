@@ -40,10 +40,10 @@ type City struct {
 }
 
 type StaticSurfSpot struct {
-	ID          int     `json: "id"`
-	Name        string  `json: "name"`
-	Latitude    float64 `json: "latitude"`
-	Longitude   float64 `json: "longitude"`
-	CityID      int     `json:"city"`
-	NearestBuoy int     `json:"nearestbuoy"`
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Latitude    float64 `json:"latitude"`
+	Longitude   float64 `json:"longitude"`
+	CityID      int     `json:"cityId"`
+	NearestBuoy int     `json:"nearestBuoy"`
 }

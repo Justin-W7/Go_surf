@@ -230,8 +230,21 @@ body {
     border-bottom: 1px solid var(--line-blue);
 }
 
+
 .content-main {
     display: flex;
     flex: 1;
     border: 2px solid green;
+}
+
+.surf-conditions-overview {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: white;
+    padding: 18px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+}
+
+.surf-conditions-overview h2 {
+    margin: 0 0 8px 0;
 }

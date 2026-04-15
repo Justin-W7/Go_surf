@@ -28,7 +28,7 @@ func printMenu() {
 	fmt.Println()
 	fmt.Println("a - DATABASE MENU")
 	fmt.Println("b - API MENU")
-	fmt.Println("b - START data ingestion")
+	fmt.Println("c - START data ingestion")
 	fmt.Println("h - SHOW HELP")
 	fmt.Println("q - QUIT PROGRAM")
 	fmt.Println()

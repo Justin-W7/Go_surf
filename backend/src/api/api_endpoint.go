@@ -102,13 +102,49 @@ func (h *Handler) getSurfSpots(c *gin.Context) {
 	c.JSON(http.StatusOK, surfSpots)
 }
 
-// getSurfConditionsCurrent
-func (h *Handler) getSurfConditionsCurrent(cityIDs []int, c *gin.Context) {
+// getSpotConditionsCurrent recieves a surfSpotID and retuns a json response
+// of current conditions for that surfSpotID
+func (h *Handler) getSpotConditionsCurrent(c *gin.Context) {
+	spotIDParam := c.Param("spotID")
 
+	surfSpotID, err := strconv.Atoi(spotIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid spotID",
+		})
+		return
+	}
+
+	var conditions models.CurrentSurfSpotConditions
+	err = h.DB.QueryRow(`
+		SELECT 
+			spot_id, 
+			recorded_at, 
+			dom_swell_height_m, 
+			dom_swell_dir,
+			wind_speed_mph,
+			wind_direction,
+			air_temp_deg_c,
+			water_temp_deg_c,
+			precipitation,
+			cloud_coverage
+		FROM current_surf_spot_conditions
+		WHERE spot_id = $1
+	`, surfSpotID).Scan(
+		&conditions.SpotId,
+		&conditions.RecordedAt,
+		&conditions.DomSwellHeightM,
+		&conditions.DomSwellDir,
+		&conditions.WindSpeedMph,
+		&conditions.WindDirection,
+		&conditions.AirTempDegC,
+		&conditions.WaterTempDegC,
+		&conditions.Precipitation,
+		&conditions.CloudCoverage,
+	)
+
+	c.JSON(http.StatusOK, conditions)
 }
-
-// GetSurfSpotsCurrent - takes a city ID. returns json of all surf spots
-// and currnet conditions for that ID.
 
 // StartRouter - creates gin router with default middleware.
 // By default it serves on :8080 unless PORT variable is defined.
@@ -120,6 +156,7 @@ func StartRouter(db *sql.DB) {
 
 	router.GET("/cities", h.getCities)
 	router.GET("/surfspots/:cityID", h.getSurfSpots)
+	router.GET("/surfforecast/current/:spotID", h.getSpotConditionsCurrent)
 
 	router.Run(":8080")
 }
