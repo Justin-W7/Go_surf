@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"go_surf/backend/src/api"
-	constant "go_surf/backend/src/config"
+	"go_surf/backend/src/config"
 	"go_surf/backend/src/models"
 	"go_surf/backend/src/processing"
 	"go_surf/backend/src/spacial"
@@ -55,10 +55,10 @@ func DisconnectDatabase(db *sql.DB) {
 
 // MoveOldBuoyData moves old buoy data from active folder to cold folder.
 func MoveOldBuoyData() {
-	srcDir := constant.DATABASE_BUOYS_RT_RAW_DATA
-	dstDir := constant.OLD_BUOY_DATA_PATH
+	srcDir := config.DATABASE_BUOYS_RT_RAW_DATA
+	dstDir := config.OLD_BUOY_DATA_PATH
 
-	files, err := os.ReadDir(constant.DATABASE_BUOYS_RT_RAW_DATA)
+	files, err := os.ReadDir(config.DATABASE_BUOYS_RT_RAW_DATA)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -103,7 +103,7 @@ func ClearRTData(db *sql.DB) {
 // UpdateBuoyTable reads buoy data from a CSV file (path defined in api.DATABASE_BUOYS_FILE)
 // and updates the "buoys" table in the database. The function:
 func UpdateBuoyTable(db *sql.DB) {
-	file, err := os.Open(constant.DATABASE_BUOYS_FILE)
+	file, err := os.Open(config.DATABASE_BUOYS_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -154,7 +154,7 @@ func UpdateBuoyTable(db *sql.DB) {
 // UpdateSurfSpotTable reads surf spot data from a CSV file (path defined in api.DATABASE_SURFSPOTS_FILE)
 // and updates the "surfspot" table in the database.
 func UpdateSurfSpotTable(db *sql.DB) {
-	file, err := os.Open(constant.DATABASE_SURFSPOTS_FILE)
+	file, err := os.Open(config.DATABASE_SURFSPOTS_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -212,7 +212,7 @@ func UpdateSurfSpotTable(db *sql.DB) {
 // UpdateCitiesTable reads city data from a CSV file (path defined in api.DATABASE_CITIES_FILE)
 // and updates the "cities" table in the database.
 func UpdateCitiesTable(db *sql.DB) {
-	file, err := os.Open(constant.DATABASE_CITIES_FILE)
+	file, err := os.Open(config.DATABASE_CITIES_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -276,7 +276,7 @@ func UpdateRTBuoyDataTable(db *sql.DB) error {
 		return err
 	}
 
-	folder := constant.DATABASE_BUOYS_RT_RAW_DATA
+	folder := config.DATABASE_BUOYS_RT_RAW_DATA
 
 	files, err := os.ReadDir(folder)
 	if err != nil {
@@ -453,41 +453,42 @@ func UpdateRTWeatherTable(db *sql.DB) error {
 		}
 
 		// get weather forcast for lat lon.
-		url := fmt.Sprintf(constant.NWSWeatherURL, lat, lon)
+		url := fmt.Sprintf(config.NWSWeatherURL, lat, lon)
 		data, err := api.FetchWeatherForecast(url)
 		if err != nil {
-			return err
+			return fmt.Errorf("FetchWeatherForecast: api call failed: %w", err)
 		}
 
 		// parse spot weather for hourly forecast url
 		forecast, err := processing.ParseSpotWeather(data)
 		if err != nil {
-			return err
+			return fmt.Errorf("ParseSpotWeather: failed to parse weather forecast data: %w", err)
 		}
 		hourlyUrl := forecast.Properties.ForecastHourly
 
 		// get hourly forecast
+		fmt.Println("Hourly url - 1", hourlyUrl)
 		rawData, err := api.FetchHourlyWeatherForecast(hourlyUrl)
 		if err != nil {
-			return err
+			return fmt.Errorf("Error 1: %w", err)
 		}
 
 		// parse raw hourly weather data
 		hourlyForecast, err := processing.ParseHourlyWeatherForecast(rawData)
 		if err != nil {
-			return err
+			return fmt.Errorf("Error 2: %w", err)
 		}
 
 		// build models.WeatherDataPoint
 		dataPoint, err := parseRTWeatherData(id, &hourlyForecast)
 		if err != nil {
-			return err
+			return fmt.Errorf("Error 3: %w", err)
 		}
 
 		// insert weather data into database
 		err = insertRTWeatherData(db, dataPoint)
 		if err != nil {
-			return err
+			return fmt.Errorf("Error 4: %w", err)
 		}
 	}
 	return nil
@@ -612,7 +613,7 @@ func UpdateCurrentSurfConditions(db *sql.DB) error {
 				domwp_sec,
 				avgwavep_sec,
 				meanwavedir_degt,
-				watert_degc 
+				watert_degc
 			FROM real_time_buoy_data_points`)
 	if err != nil {
 		return err
@@ -759,16 +760,17 @@ func buildCurrentSurfConditions(
 
 		// build models.CurrentSurfSpotConditions
 		p := &models.CurrentSurfSpotConditions{
-			SpotId:          spot.ID,
-			RecordedAt:      bData.RecordedAt,
-			DomSwellHeightM: bData.WaveHeightM,
-			DomSwellDir:     bData.MeanWaveDirectionDegT,
-			WindSpeedMph:    wData.WindSpeed,
-			WindDirection:   wData.WindDirection,
-			AirTempDegC:     wData.AirTemp,
-			WaterTempDegC:   bData.WaterTempDegC,
-			Precipitation:   wData.Precipitation,
-			CloudCoverage:   wData.CloudCoverage,
+			SpotId:                spot.ID,
+			RecordedAt:            bData.RecordedAt,
+			DomSwellHeightM:       bData.WaveHeightM,
+			DomSwellDir:           bData.MeanWaveDirectionDegT,
+			WindSpeedMph:          wData.WindSpeed,
+			WindDirection:         wData.WindDirection,
+			AirTempDegC:           wData.AirTemp,
+			WaterTempDegC:         bData.WaterTempDegC,
+			Precipitation:         wData.Precipitation,
+			CloudCoverage:         wData.CloudCoverage,
+			DominantWavePeriodSec: bData.DominantWavePeriodSec,
 		}
 
 		conditions = append(conditions, p)
@@ -789,9 +791,10 @@ func insertCurrentSurfConditions(p *models.CurrentSurfSpotConditions, db *sql.DB
 			air_temp_deg_c,
 			water_temp_deg_c,
 			precipitation,
-			cloud_coverage
+			cloud_coverage,
+			domwp_sec
 			)
-		Values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		Values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, &11)
 	`,
 		p.SpotId,
 		p.RecordedAt,
@@ -803,6 +806,7 @@ func insertCurrentSurfConditions(p *models.CurrentSurfSpotConditions, db *sql.DB
 		p.WaterTempDegC,
 		p.Precipitation,
 		p.CloudCoverage,
+		p.DominantWavePeriodSec,
 	)
 	if err != nil {
 		return err

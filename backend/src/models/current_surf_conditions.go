@@ -3,17 +3,18 @@ package models
 import "time"
 
 type CurrentSurfSpotConditions struct {
-	ID              int
-	SpotId          int
-	RecordedAt      time.Time
-	DomSwellHeightM *float64 // from buoy data
-	DomSwellDir     *float64 // from buoy data
-	WindSpeedMph    *string  // from city weather data
-	WindDirection   *string  // from city weather data
-	AirTempDegC     *float64 // from city weather data
-	WaterTempDegC   *float64 // from buoy data
-	Precipitation   *float64 // from city weather data
-	CloudCoverage   *string  // from city weather data
+	ID                    int
+	SpotId                int
+	RecordedAt            time.Time
+	DomSwellHeightM       *float64 // from buoy data
+	DomSwellDir           *float64 // from buoy data
+	WindSpeedMph          *string  // from city weather data
+	WindDirection         *string  // from city weather data
+	AirTempDegC           *float64 // from city weather data
+	WaterTempDegC         *float64 // from buoy data
+	Precipitation         *float64 // from city weather data
+	CloudCoverage         *string  // from city weather data
+	DominantWavePeriodSec *float64 // from buoy data
 }
 
 type Buoy struct {

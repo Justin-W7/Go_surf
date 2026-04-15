@@ -18,6 +18,7 @@ func StartDataIngestion(db *sql.DB) {
 	go tickerRunner(15*time.Minute, func() { updateBuoyData(db) })
 
 	go tickerRunner(time.Hour, func() {
+		fmt.Println("ticker runner")
 		updateWeatherData(db)
 
 		surfConditionStart.Do(func() {

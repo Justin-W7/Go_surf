@@ -61,7 +61,7 @@ function fetchSurfSpots(cityID) {
                 button.dataset.cityID = spot.cityId;
 
                 button.addEventListener(`click`, function () {
-                    console.log(".surf-spot-list clicked- ", button.textContent);
+                    console.log("surf-spot-list clicked- ", button.textContent);
                     fetchCurrentSurfConditions(spot.id, spot.name);
                 });
 
@@ -86,16 +86,33 @@ function fetchCurrentSurfConditions(spotID, spotName) {
 
             // conditions overview
             const overview = document.createElement("div");
-            overview.className = ".surf-conditions-overview";
+            overview.className = "surf-conditions-overview";
+
+            // data formatting
+            // meters to ft
+            let swellHeightft = (parseFloat(data.DomSwellHeightM) * 3.2808).toFixed(1);
+            // c to f
+            let waterTemp = cToF(data.WaterTempDegC).toFixed(1);
+            let airTemp = cToF(data.AirTempDegC).toFixed(1);
 
             overview.innerHTML = `
-                <h3>${spotName}</p>
-                <h4>${data.DomSwellHeightM}m @ ${data.DomSwellDir} deg</h2>
+                <h3>${spotName} - Current Conditions</h3>
+                <p> Swell Height: ${swellHeightft} ft</p> 
+                <p> Swell Direction: ${data.DomSwellDir}°</p>
+                <p> Water Temp: ${waterTemp} °f</p>
+                <p> Air Temp: ${airTemp} °f</p>
+                <p> Wind: ${data.WindSpeedMph} - ${data.WindDirection}</p>
+                <p> Cloud Coverage: ${data.CloudCoverage}</p>
+                <p> Chance of Precipitation: ${data.Precipitation}</p>
             `;
 
             contentMain.appendChild(overview);
         })
         .catch(error => console.error('Error:', error));
+};
+
+function cToF(c) {
+    return c * 9 / 5 + 32;
 };
 
 
