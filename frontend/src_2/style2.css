@@ -196,7 +196,7 @@ body {
     scroll-behavior: auto;
     scrollbar-width: small;
 
-    border: 2px solid red;
+    /* border: 2px solid red; */
 }
 
 .surf-spot-list {
@@ -234,7 +234,7 @@ body {
 .content-main {
     display: flex;
     flex: 1;
-    border: 2px solid green;
+    /* border: 2px solid green; */
 }
 
 .surf-conditions-overview {
@@ -245,6 +245,6 @@ body {
     margin-bottom: 16px;
 }
 
-.surf-conditions-overview h2 {
+.surf-conditions-overview h3 {
     margin: 0 0 8px 0;
 }

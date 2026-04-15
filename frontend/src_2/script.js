@@ -28,6 +28,11 @@ function fetchCitiesList() {
 
                 button.addEventListener('click', function () {
                     console.log(".sidebar-content clicked -", button.textContent);
+
+                    // clear content-main when new city is selected.
+                    const contentMain = document.querySelector(".content-main");
+                    contentMain.innerHTML = "";
+
                     fetchSurfSpots(button.dataset.id);
                 });
 
