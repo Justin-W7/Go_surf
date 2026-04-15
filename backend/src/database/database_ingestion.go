@@ -464,11 +464,13 @@ func UpdateRTWeatherTable(db *sql.DB) error {
 		if err != nil {
 			return fmt.Errorf("ParseSpotWeather: failed to parse weather forecast data: %w", err)
 		}
+		fmt.Println(forecast)
+
 		hourlyUrl := forecast.Properties.ForecastHourly
 
 		// get hourly forecast
-		fmt.Println("Hourly url - 1", hourlyUrl)
-		rawData, err := api.FetchHourlyWeatherForecast(hourlyUrl)
+		// rawData, err := api.FetchHourlyWeatherForecast(hourlyUrl)
+		rawData, err := api.FetchURL(hourlyUrl)
 		if err != nil {
 			return fmt.Errorf("Error 1: %w", err)
 		}
@@ -794,7 +796,7 @@ func insertCurrentSurfConditions(p *models.CurrentSurfSpotConditions, db *sql.DB
 			cloud_coverage,
 			domwp_sec
 			)
-		Values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, &11)
+		Values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`,
 		p.SpotId,
 		p.RecordedAt,

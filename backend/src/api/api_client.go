@@ -39,6 +39,22 @@ func fetchURL(url string) ([]byte, error) {
 	return data, nil
 }
 
+// making a public versoin for testing purposes.
+func FetchURL(url string) ([]byte, error) {
+	response, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed request to %s: %w", url, err)
+	}
+	defer response.Body.Close()
+
+	data, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response from %s: %w", url, err)
+	}
+
+	return data, nil
+}
+
 // FetchSpitcastSpots sends an HTTP GET request to the provided url.
 //
 // Parameters:
