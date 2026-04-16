@@ -255,6 +255,7 @@ body {
     display: flex;
 }
 
+/* Go Surf LOGO DISPLAY */
 .logotext {
     opacity: 1;
     font-size: clamp(40px, 16vw, 280px);
@@ -272,21 +273,47 @@ body {
     transition: all .2s ease;
 }
 
-.surf-conditions-overview {
+
+/* CURRENT CONDITIONS */
+.current-conditions-parent {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background: pink;
+}
+
+.conditions-card {
     display: flex;
     flex-direction: column;
     flex: 1;
-    margin-top: 8px;
-    justify-content: flex-start;
-    padding-left: 20px;
+    background: orange;
 }
 
-.surf-conditions-overview p {
-    margin: 0px;
-    font-size: 14px;
-}
-
-.surf-forecast-overview {
+.conditions-title {
     display: flex;
-    flex: 3;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+}
+
+.conditions-content {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 10px;
+    background: lightblue;
+}
+
+.conditions-content-left {
+    background: lightgreen;
+}
+
+.content-ocean-title {
+    justify-content: flex-start;
+    font-size: 20px;
+}
+
+.conditions-content-right {
+    background: lightcoral;
 }

@@ -84,9 +84,13 @@ function loadSurfSpots(cityID) {
                 button.textContent = spot.name;
                 button.dataset.cityID = spot.cityId;
 
+                let created = false;
                 button.addEventListener(`click`, function () {
+                    if (created) return;
+
                     console.log("surf-spot-list clicked- ", button.textContent);
                     loadCurrentSurfConditions(spot.id, spot.name);
+                    created = true;
                 });
 
                 surfSpotList.appendChild(button);
@@ -105,33 +109,57 @@ function loadCurrentSurfConditions(spotID, spotName) {
     fetch(`http://192.168.1.232:8080/surfforecast/current/${spotID}`)
         .then(response => response.json())
         .then(data => {
-            const contentMain = document.querySelector(".content-main");
+
+            // clear content-main
+            const contentMain = document.querySelector(".content-main")
             contentMain.innerHTML = "";
 
-            // conditions overview swell / ocean info
-            const overview = document.createElement("div");
-            overview.className = "surf-conditions-overview";
 
-            // data formatting
-            let swellHeightft = (parseFloat(data.DomSwellHeightM) * 3.2808).toFixed(1);
-            // c to f
-            let waterTemp = cToF(data.WaterTempDegC).toFixed(1);
-            let airTemp = cToF(data.AirTempDegC).toFixed(1);
+            // parent div
+            const currentConditionsParent = document.createElement("div");
+            currentConditionsParent.className = "current-conditions-parent";
 
-            overview.innerHTML = `
-                <h3>${spotName} - Current Conditions</h3>
-                <p> Swell Height: ${swellHeightft} ft @ ${data.DominantWavePeriodSec} sec</p> 
-                <p> Swell Direction: ${data.DomSwellDir}°</p>
-                <p> Water Temp: ${waterTemp} °f</p>
-                <p> Air Temp: ${airTemp} °f</p>
-                <p> Wind: ${data.WindSpeedMph} - (${data.WindDirection})</p>
-                <p> Cloud Coverage: ${data.CloudCoverage}</p>
-                <p> Chance of Precipitation: ${data.Precipitation}</p>
-            `;
+            // create first card div
+            const conditionsCard = document.createElement("div");
+            conditionsCard.className = "conditions-card";
 
-            contentMain.appendChild(overview);
+            // create title div for card
+            const conditionsTitle = document.createElement("div");
+            conditionsTitle.className = "conditions-title";
+            conditionsTitle.textContent = `${spotName} - Current Conditions `;
+
+
+
+            // create content div for card
+            const conditionsContent = document.createElement("div");
+            conditionsContent.className = "conditions-content";
+
+
+            // create left and right div for content
+            const conditionsContentLeft = document.createElement("div");
+            conditionsContentLeft.className = "conditions-content-left";
+
+
+            const conditionsContentRight = document.createElement("div");
+            conditionsContentRight.className = "conditions-content-right";
+
+
+
+            // build structure
+            conditionsContent.appendChild(conditionsContentLeft);
+            conditionsContent.appendChild(conditionsContentRight);
+
+            // append conditions components to conditions card
+            conditionsCard.appendChild(conditionsTitle);
+            conditionsCard.appendChild(conditionsContent);
+
+            // append card to parent
+            currentConditionsParent.appendChild(conditionsCard);
+
+            // append to main view
+            contentMain.appendChild(currentConditionsParent);
         })
-        .catch(error => console.error('Error:', error));
+
 };
 
 function cToF(c) {
