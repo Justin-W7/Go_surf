@@ -3,6 +3,11 @@ html {
     --line-blue: rgb(164, 205, 238);
 }
 
+/* Utility */
+.hidden {
+    display: none !important;
+}
+
 body {
     display: grid;
     height: 100vh;
@@ -14,7 +19,7 @@ body {
     grid-template-rows: 50px 1fr;
     gap: 10px;
 
-    background-color: rgb(244, 247, 248);
+    background-color: rgb(244, 244, 244);
 
     color: rgb(68, 68, 68);
     font-family: Arial, Helvetica, sans-serif;
@@ -53,7 +58,8 @@ body {
     color: white;
 }
 
-.navbutton {
+.navbutton,
+.navbutton-home {
     background-color: white;
     color: rgb(68, 68, 68);
     border: none;
@@ -65,7 +71,8 @@ body {
     transition-duration: .2s;
 }
 
-.navbutton:hover {
+.navbutton:hover,
+.navbutton-home:hover {
     color: var(--light-blue);
     border-bottom: 1px solid var(--line-blue);
 }
@@ -169,6 +176,11 @@ body {
 
 
 
+
+
+
+
+
 .content {
     grid-area: content;
     display: flex;
@@ -235,9 +247,30 @@ body {
     display: flex;
     flex-direction: column;
     flex: 1;
-    /* border: 2px solid green; */
+    justify-content: flex-start;
+    align-items: center;
 }
 
+.logodiv {
+    display: flex;
+}
+
+.logotext {
+    opacity: 1;
+    font-size: clamp(40px, 16vw, 280px);
+    font-weight: bold;
+    background-image: url("photos/ocean2.jpg");
+    background-size: cover;
+    background-position: center;
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    display: inline-block;
+    white-space: nowrap;
+
+    transition: all .2s ease;
+}
 
 .surf-conditions-overview {
     display: flex;

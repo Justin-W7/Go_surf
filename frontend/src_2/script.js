@@ -4,16 +4,40 @@
 
 // CONTENT HEADER
 
-// Horizontal scroll for .content-header
-const contentHeaderScroll = document.querySelector(".content-header")
+const contentHeaderScroll = document.querySelector(".content-header");
+const homeButton = document.querySelector(".navbutton-home");
 
+// Horizontal scroll for .content-header
 contentHeaderScroll.addEventListener("wheel", (e) => {
-    e.preventDefault();     // prevent horizontal scroll
+    e.preventDefault();     // prevent vertical scroll
     contentHeaderScroll.scrollLeft += e.deltaY;  // horizontal scroll
 });
 
+function resetHomeUI() {
+    console.log("Home Button clicked.")
+
+    // 1. Clear surf spots list.
+    const surfSpotList = document.querySelector(".surf-spot-list");
+    surfSpotList.innerHTML = "";
+
+    // 2. Clear main content area.
+    const mainContent = document.querySelector(".content-main");
+    mainContent.innerHTML = "";
+
+    // 3. Display Go Surf logo.
+    const logoDiv = document.createElement("div");
+    logoDiv.className = "logodiv";
+
+    const logoText = document.createElement("div");
+    logoText.className = "logotext";
+    logoText.textContent = "Go Surf";
+
+    logoDiv.appendChild(logoText);
+    mainContent.appendChild(logoDiv);
+};
+
 // loads cities list on sidebar.  
-function fetchCitiesList() {
+function loadCitiesList() {
     fetch("http://192.168.1.232:8080/cities")
         .then(response => response.json())
         .then(data => {
@@ -33,7 +57,7 @@ function fetchCitiesList() {
                     const contentMain = document.querySelector(".content-main");
                     contentMain.innerHTML = "";
 
-                    fetchSurfSpots(button.dataset.id);
+                    loadSurfSpots(button.dataset.id);
                 });
 
                 sidebar.appendChild(button);
@@ -44,7 +68,7 @@ function fetchCitiesList() {
 
 // loads surfspots into main content header.
 // Parent child relationship from city -> surfspots.
-function fetchSurfSpots(cityID) {
+function loadSurfSpots(cityID) {
     console.log("fetching surfspots - cityID - ", cityID);
 
     fetch(`http://192.168.1.232:8080/surfspots/${cityID}`)
@@ -62,7 +86,7 @@ function fetchSurfSpots(cityID) {
 
                 button.addEventListener(`click`, function () {
                     console.log("surf-spot-list clicked- ", button.textContent);
-                    fetchCurrentSurfConditions(spot.id, spot.name);
+                    loadCurrentSurfConditions(spot.id, spot.name);
                 });
 
                 surfSpotList.appendChild(button);
@@ -75,7 +99,7 @@ function fetchSurfSpots(cityID) {
         });
 };
 
-function fetchCurrentSurfConditions(spotID, spotName) {
+function loadCurrentSurfConditions(spotID, spotName) {
     console.log("fetching current surf conditions -", spotID);
 
     fetch(`http://192.168.1.232:8080/surfforecast/current/${spotID}`)
@@ -84,12 +108,11 @@ function fetchCurrentSurfConditions(spotID, spotName) {
             const contentMain = document.querySelector(".content-main");
             contentMain.innerHTML = "";
 
-            // conditions overview
+            // conditions overview swell / ocean info
             const overview = document.createElement("div");
             overview.className = "surf-conditions-overview";
 
             // data formatting
-            // meters to ft
             let swellHeightft = (parseFloat(data.DomSwellHeightM) * 3.2808).toFixed(1);
             // c to f
             let waterTemp = cToF(data.WaterTempDegC).toFixed(1);
@@ -116,4 +139,7 @@ function cToF(c) {
 };
 
 
-document.addEventListener("DOMContentLoaded", fetchCitiesList);
+homeButton.addEventListener("click", () => { resetHomeUI(); });
+document.addEventListener("DOMContentLoaded", () => {
+    loadCitiesList();
+});
