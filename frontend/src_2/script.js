@@ -110,62 +110,57 @@ function loadCurrentSurfConditions(spotID, spotName) {
         .then(response => response.json())
         .then(data => {
 
+            const swellHeight = metersToFeet(data.DomSwellHeightM).toFixed(1);
+            const waterTemp = cToF(data.WaterTempDegC).toFixed(1);
+            const airTemp = cToF(data.AirTempDegC).toFixed(1);
+
             // clear content-main
             const contentMain = document.querySelector(".content-main")
-            contentMain.innerHTML = "";
+            contentMain.innerHTML = `
+                <div class="current-conditions-parent">
+                    <div class="conditions-card">
+                        <div class="conditions-title">
+                            ${spotName} - Current Conditions
+                        </div>
 
+                        <div class="conditions-content">
+                            <div class="conditions-content-left">
+                                <div class="conditions-content-left-title">
+                                    Ocean Info
+                                </div>
+                                <div class="content-left-data">
+                                    <p>Dominant swell: ${swellHeight} ft @ ${data.DominantWavePeriodSec} sec</p>
+                                    <p>Swell Direction: ${data.DomSwellDir}°</p>
+                                    <p>Water Temp: ${waterTemp}°</p>
+                                </div>
+                            </div>
 
-            // parent div
-            const currentConditionsParent = document.createElement("div");
-            currentConditionsParent.className = "current-conditions-parent";
+                            <div class="conditions-content-right">
+                                <div class="conditions-content-right-title">
+                                    Weather Info
+                                </div>
+                                <div class="content-right-data">
+                                    <p>Air Temp: ${airTemp}°</p>
+                                    <p>Wind: ${data.WindSpeedMph} - ${data.WindDirection}</p>
+                                    <p>Cloud Coverage: ${data.CloudCoverage}</p>
+                                    <p>Precipitation: ${data.Precipitation}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
 
-            // create first card div
-            const conditionsCard = document.createElement("div");
-            conditionsCard.className = "conditions-card";
-
-            // create title div for card
-            const conditionsTitle = document.createElement("div");
-            conditionsTitle.className = "conditions-title";
-            conditionsTitle.textContent = `${spotName} - Current Conditions `;
-
-
-
-            // create content div for card
-            const conditionsContent = document.createElement("div");
-            conditionsContent.className = "conditions-content";
-
-
-            // create left and right div for content
-            const conditionsContentLeft = document.createElement("div");
-            conditionsContentLeft.className = "conditions-content-left";
-
-
-            const conditionsContentRight = document.createElement("div");
-            conditionsContentRight.className = "conditions-content-right";
-
-
-
-            // build structure
-            conditionsContent.appendChild(conditionsContentLeft);
-            conditionsContent.appendChild(conditionsContentRight);
-
-            // append conditions components to conditions card
-            conditionsCard.appendChild(conditionsTitle);
-            conditionsCard.appendChild(conditionsContent);
-
-            // append card to parent
-            currentConditionsParent.appendChild(conditionsCard);
-
-            // append to main view
-            contentMain.appendChild(currentConditionsParent);
-        })
-
+        });
 };
 
 function cToF(c) {
     return c * 9 / 5 + 32;
 };
 
+function metersToFeet(c) {
+    return c * 3.28084
+}
 
 homeButton.addEventListener("click", () => { resetHomeUI(); });
 document.addEventListener("DOMContentLoaded", () => {

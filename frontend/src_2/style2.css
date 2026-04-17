@@ -280,40 +280,66 @@ body {
     flex-direction: column;
     height: 100%;
     width: 100%;
-    background: pink;
 }
 
 .conditions-card {
     display: flex;
     flex-direction: column;
     flex: 1;
-    background: orange;
 }
 
 .conditions-title {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 5px;
+
+    padding: 20px;
+    margin-bottom: 20px;
+
+
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .conditions-content {
     flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    padding: 10px;
-    background: lightblue;
+
+    font-weight: 300;
+    /* border: 2px solid lightblue; */
 }
 
 .conditions-content-left {
-    background: lightgreen;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    font-size: 14px;
+    /* border: 2px solid lightgreen; */
 }
 
-.content-ocean-title {
-    justify-content: flex-start;
-    font-size: 20px;
+.conditions-content-left-title {
+    font-size: 18px;
+    font-weight: 300;
 }
+
+.content-left-data {}
 
 .conditions-content-right {
-    background: lightcoral;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    font-size: 14px;
+    /* border: 2px solid lightcoral; */
 }
+
+.conditions-content-right-title {
+    font-size: 18px;
+    font-weight: 300;
+}
+
+.content-right-data {}
