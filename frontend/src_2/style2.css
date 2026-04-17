@@ -12,9 +12,9 @@ body {
     display: grid;
     height: 100vh;
     grid-template-areas:
-        "rail sidebar content content content";
+        "rail sidebar content content content content";
 
-    grid-template-columns: 50px 1fr 1fr 1fr 1fr;
+    grid-template-columns: 50px 1fr 1fr 1fr 1fr 1fr;
     gap: 10px;
 
     background-color: rgb(250, 250, 250);
@@ -36,8 +36,8 @@ body {
 
     height: 98%;
 
-    color: rgb(248, 248, 248);
-    border: 2px solid rgb(230, 230, 230);
+    background: white;
+    border: 1px solid rgb(220, 220, 220);
     border-radius: 15px;
 }
 
@@ -64,25 +64,24 @@ body {
 .navbutton.forecast-icon,
 .navbutton.about-icon,
 .navbutton.user-icon {
+    display: flex;
     background-color: white;
     border: 1px solid rgb(220, 220, 220);
     width: 35px;
     height: 35px;
-    border-radius: 50%;
     justify-content: center;
-
-    box-shadow: 1px 1px 5px rgb(235, 235, 235);
+    align-items: center;
+    border-radius: 50%;
+    box-shadow: 1px 1px 5px rgb(230, 230, 230);
 
     transition-duration: .2s;
 }
 
-/*
-.navbutton.user-icon:hover {
-    border: 2px solid var(--light-blue);
-    border-radius: 50%;
-}
 
-*/
+.navbutton:hover {
+    border: 1px solid var(--light-blue);
+    box-shadow: 1px 1px 5px rgb(198, 204, 208);
+}
 
 
 
@@ -93,6 +92,7 @@ body {
 
     display: flex;
     flex-direction: column;
+    height: 98%;
     min-width: fit-content;
     background-color: white;
     border: 1px solid rgb(220, 220, 220);
@@ -155,15 +155,13 @@ body {
 
 
 
-
-
-
-
 .content {
     grid-area: content;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+
+    height: 98%;
 
     background-color: white;
     border: 1px solid rgb(220, 220, 220);
@@ -229,6 +227,8 @@ body {
 
 .logodiv {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* Go Surf LOGO DISPLAY */
@@ -255,7 +255,6 @@ body {
 
 
 /* CURRENT CONDITIONS */
-/*
 .current-conditions-parent {
     display: flex;
     justify-content: center;

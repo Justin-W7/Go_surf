@@ -5,7 +5,7 @@
 // CONTENT HEADER
 
 const contentHeaderScroll = document.querySelector(".content-header");
-const homeButton = document.querySelector(".navbutton-home");
+const homeButton = document.querySelector(".navbutton.home-icon");
 
 // Horizontal scroll for .content-header
 contentHeaderScroll.addEventListener("wheel", (e) => {
