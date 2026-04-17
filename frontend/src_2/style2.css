@@ -289,6 +289,8 @@ body {
     align-items: flex-start;
 
     padding: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
 
     background: rgb(248, 248, 248);
     border-radius: 15px;

@@ -1,9 +1,78 @@
 id,name,latitude,longitude,city_id,break_type,orientation
-1,Santa Ana River Jetties,33.5947,-117.8801,1,Rivermouth/Beach break,255
-2,56th Street,33.60631,-117.92909,1,Beach break,240
-3,54th Street,33.60547,-117.92772,1,Beach break,240
-4,40th Street,33.60245,-117.92362,1,Jetty/Beach break,235
-5,38th Street,33.60175,-117.92150,1,Beach break,240
-6,Blackies,33.6101,-117.9291,1,Beach break,260
-7,Newport Point,33.5889,-117.9007,1,Beach break,165
-8,The Wedge,33.59252,-117.88228,1,Shore break,150
+1,Long Beach Breakwater,33.7503,-118.2167,1,jetty,190
+2,Seal Beach Pier,33.7395,-118.1048,2,beach,190
+3,Surfside Jetty,33.7280,-118.0865,2,jetty,200
+4,Bolsa Chica State Beach,33.6895,-118.0465,3,beach,200
+5,Huntington Beach Pier,33.6550,-118.0030,3,beach,200
+6,Goldenwest,33.6415,-118.0125,3,beach,200
+
+7,Newport Pier,33.6073,-117.9297,4,beach,190
+8,Blackies,33.6095,-117.9290,4,beach,190
+9,56th Street (Newport),33.6215,-117.9315,4,beach,190
+10,The Wedge,33.5930,-117.8810,4,wedge,180
+11,Corona del Mar (CDM),33.6010,-117.8745,4,reef,190
+
+12,El Moro,33.5736,-117.8409,5,beach,220
+13,Crescent Bay,33.5556,-117.8117,5,shorebreak,220
+14,Shaw's Cove,33.5526,-117.8095,5,reef,220
+15,Diver's Cove,33.5505,-117.8089,5,reef,220
+16,Rockpile,33.5489,-117.8065,5,reef,220
+17,Main Beach (Laguna),33.5427,-117.7839,5,beach,200
+18,St. Ann's,33.5415,-117.7827,5,reef,200
+19,Brooks Street,33.5403,-117.7812,5,reef,210
+20,Thalia Street,33.5361,-117.7782,5,reef/beach,200
+21,Victoria Beach,33.5273,-117.7724,5,reef,200
+22,Table Rock,33.5225,-117.7692,5,reef,200
+23,Aliso Beach,33.5138,-117.7589,5,beach,200
+
+24,Strands Beach,33.4671,-117.7167,6,beach,220
+25,Salt Creek,33.4753,-117.7220,6,beach/reef,220
+26,Doheny State Beach,33.4636,-117.6836,6,beach,190
+27,Doheny Rivermouth,33.4625,-117.6825,6,river mouth,190
+
+28,San Clemente Pier,33.4193,-117.6219,7,beach,190
+29,T-Street,33.4155,-117.6170,7,reef,210
+30,Lasuen (Lost Winds),33.4105,-117.6140,7,reef,210
+31,Riviera,33.4065,-117.6110,7,reef,210
+32,Calafia,33.4015,-117.6065,7,reef,210
+33,Trestles (Lower),33.3822,-117.5920,7,reef,210
+34,Trestles (Upper),33.3843,-117.5933,7,reef,210
+35,Cottons,33.3895,-117.5995,7,reef,210
+
+36,Old Man's (San Onofre),33.3825,-117.5930,8,reef,210
+37,Dogpatch (San Onofre),33.3798,-117.5905,8,reef,210
+38,Trail 1,33.3765,-117.5880,8,reef,210
+39,Trail 2,33.3740,-117.5865,8,reef,210
+40,Trail 3,33.3715,-117.5850,8,reef,210
+41,Church,33.3695,-117.5835,8,reef,210
+
+42,Oceanside Harbor (North Jetty),33.2065,-117.3980,9,jetty,190
+43,Oceanside Harbor (South Jetty),33.2035,-117.3955,9,jetty,190
+44,Oceanside Pier,33.1958,-117.3846,9,beach,190
+
+45,Tamarack,33.1585,-117.3570,10,beach,200
+46,Terra Mar,33.1485,-117.3430,10,reef,200
+
+47,Swami's,33.0347,-117.2945,11,reef,210
+48,D Street,33.0480,-117.2970,11,beach,200
+49,Beacon's,33.0265,-117.2920,11,reef,210
+
+50,Seaside Reef,32.9955,-117.2750,12,reef,210
+51,Fletcher Cove,32.9912,-117.2720,12,beach,200
+
+52,Del Mar Rivermouth,32.9730,-117.2690,13,river mouth,200
+
+53,Blacks Beach,32.8897,-117.2536,14,beach,200
+54,Scripps Pier,32.8670,-117.2570,14,reef,210
+55,Windansea,32.8328,-117.2810,14,reef,210
+56,Marine Street,32.8290,-117.2790,14,shorebreak,200
+
+57,Pacific Beach Point,32.7977,-117.2550,15,jetty,200
+
+58,Mission Beach,32.7701,-117.2523,16,beach,200
+
+59,Ocean Beach Pier,32.7517,-117.2540,17,beach,200
+
+60,Sunset Cliffs,32.7353,-117.2545,18,reef,210
+
+61,Imperial Beach Pier,32.5839,-117.1326,19,beach,190

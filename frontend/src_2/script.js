@@ -2,16 +2,29 @@
 // INTERFACE INTERACTION
 //------------------------------------------------------------------------
 
-// CONTENT HEADER
-
+// ---------------- const variables for script ----------------------
 const contentHeaderScroll = document.querySelector(".content-header");
 const homeButton = document.querySelector(".navbutton.home-icon");
 
+// hold cities for search filtering
+const masterCitiesList = [];
+
+// CONTENT HEADER
 // Horizontal scroll for .content-header
 contentHeaderScroll.addEventListener("wheel", (e) => {
     e.preventDefault();     // prevent vertical scroll
     contentHeaderScroll.scrollLeft += e.deltaY;  // horizontal scroll
 });
+
+// function fetchCities() {
+//     fetch("http://192.168.1.232:8080/cities")
+//         .then(response => response.json())
+//         .then(data => {
+//             data.forEach(city => {
+//                 masterCitiesList.push(city);
+//             });
+//         });
+// };
 
 function resetHomeUI() {
     console.log("Home Button clicked.")
@@ -44,6 +57,10 @@ function loadCitiesList() {
             const sidebar = document.querySelector(".sidebar-content");
 
             data.forEach(city => {
+
+                // add cities to masterCityList
+                masterCitiesList.push(city);
+
                 const button = document.createElement("button");
                 button.className = "city-button";
                 button.textContent = `${city.name}, ${city.state.slice(0, 2)}`;
@@ -84,13 +101,10 @@ function loadSurfSpots(cityID) {
                 button.textContent = spot.name;
                 button.dataset.cityID = spot.cityId;
 
-                let created = false;
                 button.addEventListener(`click`, function () {
-                    if (created) return;
 
                     console.log("surf-spot-list clicked- ", button.textContent);
                     loadCurrentSurfConditions(spot.id, spot.name);
-                    created = true;
                 });
 
                 surfSpotList.appendChild(button);

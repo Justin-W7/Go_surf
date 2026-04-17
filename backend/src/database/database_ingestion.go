@@ -160,7 +160,7 @@ func UpdateSurfSpotTable(db *sql.DB) {
 
 	file, err := os.Open(filepath)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("UpdateSurfSpotTable failed: %v", err)
 	}
 	defer file.Close()
 
@@ -220,7 +220,7 @@ func UpdateCitiesTable(db *sql.DB) error {
 
 	file, err := os.Open(filepath)
 	if err != nil {
-		log.Fatalf("Could not open config.DATABASE_CITIES_FILE: ", err)
+		log.Fatalf("Could not open config.DATABASE_CITIES_FILE: %v", err)
 	}
 	defer file.Close()
 

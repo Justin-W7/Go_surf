@@ -2,7 +2,6 @@ package spacial
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"math"
 )
@@ -40,7 +39,6 @@ func NearestBuoy(lat, lon float64, db *sql.DB) int {
 			nearest = current
 			nearestBuoyId = id
 		}
-		fmt.Println("buoy_id: ", id, "   ", nearest)
 	}
 
 	return nearestBuoyId

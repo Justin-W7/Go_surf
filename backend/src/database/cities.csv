@@ -1,4 +1,20 @@
-id, name, latitude, longitude, country, state, county
-001,Newport Beach,33.628342,-117.927933,United States,California,Orange
-002,Huntington Beach,33.66126,-117.99858,United States,California,Orange
-003,Laguna Beach,33.54342,-117.78525,United States,California,Orange
+id,name,latitude,longitude,country,state,county
+1,Long Beach,33.7701,-118.1937,USA,California,Los Angeles County
+2,Seal Beach,33.7414,-118.1048,USA,California,Orange County
+3,Huntington Beach,33.6595,-117.9988,USA,California,Orange County
+4,Newport Beach,33.6189,-117.9298,USA,California,Orange County
+5,Laguna Beach,33.5427,-117.7854,USA,California,Orange County
+6,Dana Point,33.4669,-117.6981,USA,California,Orange County
+7,San Clemente,33.4269,-117.6120,USA,California,Orange County
+8,San Onofre,33.3811,-117.5739,USA,California,San Diego County
+9,Oceanside,33.1959,-117.3795,USA,California,San Diego County
+10,Carlsbad,33.1581,-117.3506,USA,California,San Diego County
+11,Encinitas,33.0360,-117.2910,USA,California,San Diego County
+12,Solana Beach,32.9912,-117.2711,USA,California,San Diego County
+13,Del Mar,32.9595,-117.2653,USA,California,San Diego County
+14,La Jolla,32.8328,-117.2713,USA,California,San Diego County
+15,Pacific Beach,32.7977,-117.2536,USA,California,San Diego County
+16,Mission Beach,32.7701,-117.2523,USA,California,San Diego County
+17,Ocean Beach,32.7517,-117.2540,USA,California,San Diego County
+18,Sunset Cliffs,32.7353,-117.2545,USA,California,San Diego County
+19,Imperial Beach,32.5792,-117.1326,USA,California,San Diego County

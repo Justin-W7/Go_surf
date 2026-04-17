@@ -6,6 +6,7 @@ import (
 	"go_surf/backend/src/api"
 	"go_surf/backend/src/config"
 	"go_surf/backend/src/database"
+	"time"
 )
 
 // DatabaseMenu is the cli for static database updates.
@@ -24,6 +25,7 @@ func DatabaseMenu(db *sql.DB) {
 		fmt.Println("g - CLEAR real time table data.")
 		fmt.Println("i - MOVE current rt buoy data to cold folder.")
 		fmt.Println("j - TEST UpdateCurrentSurfConditions().")
+		fmt.Println("x - REBUILD ALL STATIC TABLES")
 		fmt.Println()
 		fmt.Println("q - BACK")
 		fmt.Println("------------------------------------------------------------")
@@ -50,6 +52,20 @@ func DatabaseMenu(db *sql.DB) {
 			database.MoveOldBuoyData()
 		case "j":
 			database.UpdateCurrentSurfConditions(db)
+		case "x":
+			fmt.Println("Running X case...")
+
+			fmt.Println("Updating buoy...")
+			database.UpdateBuoyTable(db)
+
+			fmt.Println("Updating cities...")
+			database.UpdateCitiesTable(db)
+
+			fmt.Println("Updating surf spots...")
+			database.UpdateSurfSpotTable(db)
+
+			fmt.Println("All static tables rebuilt.")
+			time.Sleep(2 * time.Second)
 		default:
 			if i != "q" {
 				fmt.Println("Invalid selection, try again.")
