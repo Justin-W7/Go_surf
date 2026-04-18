@@ -6,8 +6,12 @@
 const contentHeaderScroll = document.querySelector(".content-header");
 const homeButton = document.querySelector(".navbutton.home-icon");
 
+
+
+
+
 // hold cities for search filtering
-const masterCitiesList = [];
+let masterCitiesList = [];
 
 // CONTENT HEADER
 // Horizontal scroll for .content-header
@@ -16,15 +20,63 @@ contentHeaderScroll.addEventListener("wheel", (e) => {
     contentHeaderScroll.scrollLeft += e.deltaY;  // horizontal scroll
 });
 
-// function fetchCities() {
-//     fetch("http://192.168.1.232:8080/cities")
-//         .then(response => response.json())
-//         .then(data => {
-//             data.forEach(city => {
-//                 masterCitiesList.push(city);
-//             });
-//         });
-// };
+
+citiesSearchInput.addEventListener('input', (e) => {
+
+    let searchValue = e.target.value.toLowerCase().trim();
+    console.log('Searching for: ', searchValue);
+
+    if (searchValue === "") {
+        renderCitiesList(masterCitiesList);
+        return;
+    }
+
+    const searchMatch = [];
+    masterCitiesList.forEach(city => {
+        if (city.name.toLowerCase().includes(searchValue)) {
+            searchMatch.push(city);
+        };
+    });
+    renderCitiesList(searchMatch);
+});
+
+
+function fetchCities() {
+    fetch("http://192.168.1.232:8080/cities")
+        .then(response => response.json())
+        .then(data => {
+            masterCitiesList = data;
+            renderCitiesList(masterCitiesList);
+        })
+        .catch(error => console.error('Error:', error));
+};
+
+function renderCitiesList(citiesList) {
+
+    // clear content before adding cities.
+    sidebarContent.innerHTML = "";
+
+    citiesList.forEach(city => {
+        const button = document.createElement("button");
+        button.className = "city-button";
+        button.textContent = `${city.name}, ${city.state.slice(0, 2)}`;
+        button.dataset.id = `${city.id}`;
+
+
+        button.addEventListener('click', function () {
+            console.log(".sidebar-content clicked -", button.textContent);
+
+            // clear content-main when new city is selected.
+            const contentMain = document.querySelector(".content-main");
+            contentMain.innerHTML = "";
+
+            loadSurfSpots(button.dataset.id);
+        });
+
+        sidebarContent.appendChild(button);
+    });
+}
+
 
 function resetHomeUI() {
     console.log("Home Button clicked.")
@@ -49,39 +101,6 @@ function resetHomeUI() {
     mainContent.appendChild(logoDiv);
 };
 
-// loads cities list on sidebar.  
-function loadCitiesList() {
-    fetch("http://192.168.1.232:8080/cities")
-        .then(response => response.json())
-        .then(data => {
-            const sidebar = document.querySelector(".sidebar-content");
-
-            data.forEach(city => {
-
-                // add cities to masterCityList
-                masterCitiesList.push(city);
-
-                const button = document.createElement("button");
-                button.className = "city-button";
-                button.textContent = `${city.name}, ${city.state.slice(0, 2)}`;
-                button.dataset.id = `${city.id}`;
-
-
-                button.addEventListener('click', function () {
-                    console.log(".sidebar-content clicked -", button.textContent);
-
-                    // clear content-main when new city is selected.
-                    const contentMain = document.querySelector(".content-main");
-                    contentMain.innerHTML = "";
-
-                    loadSurfSpots(button.dataset.id);
-                });
-
-                sidebar.appendChild(button);
-            });
-        })
-        .catch(error => console.error('Error:', error));
-};
 
 // loads surfspots into main content header.
 // Parent child relationship from city -> surfspots.
@@ -178,5 +197,7 @@ function metersToFeet(c) {
 
 homeButton.addEventListener("click", () => { resetHomeUI(); });
 document.addEventListener("DOMContentLoaded", () => {
-    loadCitiesList();
+    const sidebarContent = document.querySelector(".sidebar-content");
+    const citiesSearchInput = document.querySelector(".location-searchbox input");
+    fetchCities();
 });
