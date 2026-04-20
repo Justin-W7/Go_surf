@@ -52,7 +52,6 @@ function fetchCities() {
     fetch(`${API_BASE}/cities`)
         .then(res => res.json())
         .then(data => {
-            console.log("cities: ", data);
             state.cities = data;
             renderCitiesList(data);
         })
@@ -101,14 +100,15 @@ function loadSurfSpots(cityId) {
             });
 
             DOM.surfSpotList.appendChild(button);
-
+            /*
             requestAnimationFrame(() => {
                 button.classList.add("show");
             });
-        });
+            */
 
+        });
+        
         // show first surfspot data
-        console.log(data[0]);
         loadCurrentSurfConditions(data[0].id, data[0].name);
     });
 }
