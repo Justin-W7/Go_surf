@@ -1,5 +1,5 @@
 // CONFIG -----------------------------------------------
-const API_BASE = "http://192.168.50.84:8080";
+const API_BASE = "http://localhost:8080";
 
 // Application state -------------------------------------
 const state = {

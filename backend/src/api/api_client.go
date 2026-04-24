@@ -39,7 +39,7 @@ func fetchURL(url string) ([]byte, error) {
 	return data, nil
 }
 
-// making a public versoin for testing purposes.
+// Public FetchURL
 func FetchURL(url string) ([]byte, error) {
 	response, err := http.Get(url)
 	if err != nil {

@@ -5,11 +5,14 @@ import (
 	"path/filepath"
 )
 
-// URLs
+// API URLs
 const (
 	SpitcastSpotURL     = "https://api.spitcast.com/api/spot"
 	SpitcastForecastURL = "https://api.spitcast.com/api/spot_forecast/%d/%d/%d/%d"
 	NWSWeatherURL       = "https://api.weather.gov/points/%f,%f"
+
+	//Real Time weather API
+	RT_WEATHER_URL = "https://api.weather.gov/stations/%s/observations/latest"
 
 	// Real Time Buoy Data
 	// EXAMPLE: https://www.ndbc.noaa.gov/data/realtime2/4038.txt

@@ -13,12 +13,11 @@ import (
 	"strings"
 	"time"
 
-	"go_surf/backend/src/api"
 	"go_surf/backend/src/config"
 	"go_surf/backend/src/models"
-	"go_surf/backend/src/processing"
+	//"go_surf/backend/src/processing"
 	"go_surf/backend/src/spacial"
-	"go_surf/backend/src/utils"
+	//"go_surf/backend/src/utils"
 
 	_ "github.com/lib/pq"
 )
@@ -267,6 +266,10 @@ func UpdateCitiesTable(db *sql.DB) error {
 		}
 		lineNumber++
 	}
+
+	if err := UpdateCityWeatherStationId(db); err != nil {
+		fmt.Errorf("updateCityWeatherStationId failed: %w", err)
+	}
 	return nil
 }
 
@@ -382,20 +385,7 @@ func parseRTBuoyLine(line string, buoyID int) (*models.BuoyDataPoint, error) {
 	return p, nil
 }
 
-// parseDataTypes returns a pointer so it can return multiple states.
-// This enables it to return a number, a missing value ("MM") or nil to mean no value, instead of 0
-// which may be a valid value for the data.
-func parseDataFloat(value string) (*float64, error) {
-	if value == "MM" {
-		return nil, nil
-	}
 
-	result, err := strconv.ParseFloat(value, 64)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return &result, nil
-}
 
 func insertBuoyData(db *sql.DB, p *models.BuoyDataPoint) error {
 	_, err := db.Exec(`
@@ -435,6 +425,7 @@ func insertBuoyData(db *sql.DB, p *models.BuoyDataPoint) error {
 	return nil
 }
 
+/*
 func UpdateRTWeatherTable(db *sql.DB) error {
 	// Clear table for new data.
 	_, err := db.Exec(`TRUNCATE current_weather`)
@@ -443,7 +434,7 @@ func UpdateRTWeatherTable(db *sql.DB) error {
 	}
 
 	// for each record in cities table get latitude and longitude.
-	rows, err := db.Query("SELECT id, latitude, longitude FROM cities")
+	rows, err := db.Query(`SELECT id, latitude, longitude FROM cities`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -459,8 +450,11 @@ func UpdateRTWeatherTable(db *sql.DB) error {
 			return err
 		}
 
-		// get weather forcast for lat lon.
+		// build url for fetching weather data.
 		url := fmt.Sprintf(config.NWSWeatherURL, lat, lon)
+		fmt.Println(url);
+
+		// get weather forcast for lat lon.
 		data, err := api.FetchWeatherForecast(url)
 		if err != nil {
 			return fmt.Errorf("FetchWeatherForecast: api call failed: %w", err)
@@ -513,7 +507,6 @@ func parseRTWeatherData(id int, data *models.HourlyWeatherForecast) (*models.Wea
 		log.Fatal(err)
 	}
 	utcStartTime := startTime.UTC()
-
 	observedAt := utcStartTime
 	recordedAt := t
 	windSpeed := forecast.Properties.Periods[0].WindSpeed
@@ -565,6 +558,7 @@ func insertRTWeatherData(db *sql.DB, p *models.WeatherDatapoint) error {
 
 	return nil
 }
+*/
 
 func UpdateCurrentSurfConditions(db *sql.DB) error {
 	// Clear table for new data
@@ -820,4 +814,20 @@ func insertCurrentSurfConditions(p *models.CurrentSurfSpotConditions, db *sql.DB
 	}
 
 	return nil
+}
+
+// UTILITY FUNCTIONS
+// parseDataFloat returns a pointer so it can return multiple states.
+// This enables it to return a number, a missing value ("MM") or nil to mean no value, instead of 0
+// which may be a valid value for the data.
+func parseDataFloat(value string) (*float64, error) {
+	if value == "MM" {
+		return nil, nil
+	}
+
+	result, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &result, nil
 }

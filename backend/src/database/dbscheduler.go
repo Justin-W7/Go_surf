@@ -60,7 +60,7 @@ func updateBuoyData(db *sql.DB) error {
 
 func updateWeatherData(db *sql.DB) error {
 	fmt.Println("Updating real time weather data.")
-	if err := UpdateRTWeatherTable(db); err != nil {
+	if err := UpdateRTWeatherData(db); err != nil {
 		fmt.Println("Error updating weather data: ", err)
 	}
 	return nil

@@ -25,6 +25,7 @@ func DatabaseMenu(db *sql.DB) {
 		fmt.Println("g - CLEAR real time table data.")
 		fmt.Println("i - MOVE current rt buoy data to cold folder.")
 		fmt.Println("j - TEST UpdateCurrentSurfConditions().")
+		fmt.Println("k - TEST UpdateRTWeatherData()")
 		fmt.Println("x - REBUILD ALL STATIC TABLES")
 		fmt.Println()
 		fmt.Println("q - BACK")
@@ -45,13 +46,15 @@ func DatabaseMenu(db *sql.DB) {
 		case "e":
 			database.UpdateRTBuoyDataTable(db)
 		case "f":
-			database.UpdateRTWeatherTable(db)
+			database.UpdateRTWeatherData(db)
 		case "g":
 			database.ClearRTData(db)
 		case "i":
 			database.MoveOldBuoyData()
 		case "j":
 			database.UpdateCurrentSurfConditions(db)
+		case "k":
+			database.UpdateRTWeatherData(db)
 		case "x":
 			fmt.Println("Running X case...")
 
@@ -60,6 +63,9 @@ func DatabaseMenu(db *sql.DB) {
 
 			fmt.Println("Updating cities...")
 			database.UpdateCitiesTable(db)
+
+			fmt.Println("Updating ctites weather stations.")
+			database.UpdateCityWeatherStationId(db)
 
 			fmt.Println("Updating surf spots...")
 			database.UpdateSurfSpotTable(db)

@@ -32,7 +32,7 @@ func NearestBuoy(lat, lon float64, db *sql.DB) int {
 		}
 
 		// find distance between buoy and spot
-		d := haversine(lat, lon, bLat, bLon)
+		d := Haversine(lat, lon, bLat, bLon)
 		current = d
 
 		if current < nearest {
@@ -46,7 +46,7 @@ func NearestBuoy(lat, lon float64, db *sql.DB) int {
 
 // haversine function finds the distance bewteen two
 // geo coordinates on earth.
-func haversine(lat1, lon1, lat2, lon2 float64) float64 {
+func Haversine(lat1, lon1, lat2, lon2 float64) float64 {
 	const R = 6371.0 // Earths radius, km
 
 	const degToRad = math.Pi / 180.0

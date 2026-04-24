@@ -12,3 +12,5 @@ type WeatherDatapoint struct {
 	CloudCoverage *string
 	ObservedAt    time.Time
 }
+
+

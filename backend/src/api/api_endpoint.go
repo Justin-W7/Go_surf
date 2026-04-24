@@ -176,5 +176,5 @@ func StartRouter(db *sql.DB) {
 
 	router.Static("/gosurf", "./frontend/src_2")
 
-	router.Run("0.0.0.0:8080")
+	router.Run(":8080")
 }
