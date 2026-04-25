@@ -2,10 +2,12 @@ package database
 
 import (
 	"fmt"
+	"math"
 	"database/sql"
 	"encoding/json"
 	"go_surf/backend/src/config"
 	"go_surf/backend/src/api"
+	"go_surf/backend/src/utils"
 )
 
 type CurrentObservation struct {
@@ -165,15 +167,31 @@ func updateRTWeatherTable(m map[int]CurrentObservation, db *sql.DB) error {
 			cloud = props.CloudLayers[0].Amount
 		}
 
+		// correct values - c to f
+		var t any
+		var temperatureF any
+		if props.Temperature.Value != nil {
+			t = math.Round(utils.CelsiusToFahrenheit(*props.Temperature.Value))
+			temperatureF = &t
+		}
+
+		var w any
+		var windSpeed any
+		if props.WindSpeed.Value != nil {
+			w = math.Round(utils.KphToMph(*props.WindSpeed.Value))
+			windSpeed = &w
+		}
+
+
 		_, err := stmnt.Exec(
 			CityId,
-			props.Timestamp,                         // recorded_at
-			props.WindSpeed.Value,
+			props.Timestamp,                      // recorded_at
+			windSpeed,
 			props.WindDirection.Value,
-			props.Temperature.Value,
+			temperatureF,
 			props.PrecipitationLastHour.Value,
 			cloud,
-			props.Timestamp, // observed_at (same for now)
+			props.Timestamp, 					  // observed_at (same for now)
 		)
 
 		if err != nil {
@@ -182,7 +200,6 @@ func updateRTWeatherTable(m map[int]CurrentObservation, db *sql.DB) error {
 	}
 	return nil
 }
-
 
 
 

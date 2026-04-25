@@ -425,6 +425,8 @@ func insertBuoyData(db *sql.DB, p *models.BuoyDataPoint) error {
 	return nil
 }
 
+// THIS HAS BEEN REPLACED WITH UpdateRTWeatherData() located in rt_weather.go 
+//
 /*
 func UpdateRTWeatherTable(db *sql.DB) error {
 	// Clear table for new data.
@@ -494,6 +496,7 @@ func UpdateRTWeatherTable(db *sql.DB) error {
 	}
 	return nil
 }
+
 
 func parseRTWeatherData(id int, data *models.HourlyWeatherForecast) (*models.WeatherDatapoint, error) {
 	forecast := *data
