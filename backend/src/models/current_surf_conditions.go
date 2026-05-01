@@ -10,7 +10,7 @@ type CurrentSurfSpotConditions struct {
 	DomSwellDir           *float64 // from buoy data
 	WindSpeedMph          *string  // from city weather data
 	WindDirection         *string  // from city weather data
-	AirTempDegC           *float64 // from city weather data
+	AirTempDegF           *float64 // from city weather data
 	WaterTempDegC         *float64 // from buoy data
 	Precipitation         *float64 // from city weather data
 	CloudCoverage         *string  // from city weather data

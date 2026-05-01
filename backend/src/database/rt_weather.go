@@ -155,7 +155,7 @@ func updateRTWeatherTable(m map[int]CurrentObservation, db *sql.DB) error {
 			recorded_at,
 			wind_speed,
 			wind_direction,
-			air_temp_c,
+			air_temp,
 			precipitation,
 			cloud_coverage,
 			observed_at

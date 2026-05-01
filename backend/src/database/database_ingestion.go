@@ -269,7 +269,7 @@ func UpdateCitiesTable(db *sql.DB) error {
 	}
 
 	if err := UpdateCityWeatherStationId(db); err != nil {
-		fmt.Errorf("updateCityWeatherStationId failed: %w", err)
+		return fmt.Errorf("updateCityWeatherStationId failed: %w", err)
 	}
 	return nil
 }
@@ -587,7 +587,7 @@ func UpdateCurrentSurfConditions(db *sql.DB) error {
 				recorded_at,
 				wind_speed,
 				wind_direction,
-				air_temp_c,
+				air_temp,
 				precipitation,
 				cloud_coverage,
 				observed_at
@@ -769,7 +769,7 @@ func buildCurrentSurfConditions(
 			DomSwellDir:           bData.MeanWaveDirectionDegT,
 			WindSpeedMph:          wData.WindSpeed,
 			WindDirection:         wData.WindDirection,
-			AirTempDegC:           wData.AirTemp,
+			AirTempDegF:           wData.AirTemp,
 			WaterTempDegC:         bData.WaterTempDegC,
 			Precipitation:         wData.Precipitation,
 			CloudCoverage:         wData.CloudCoverage,
@@ -791,7 +791,7 @@ func insertCurrentSurfConditions(p *models.CurrentSurfSpotConditions, db *sql.DB
 			dom_swell_dir,
 			wind_speed_mph,
 			wind_direction,
-			air_temp_deg_c,
+			air_temp_deg_f,
 			water_temp_deg_c,
 			precipitation,
 			cloud_coverage,
@@ -805,7 +805,7 @@ func insertCurrentSurfConditions(p *models.CurrentSurfSpotConditions, db *sql.DB
 		p.DomSwellDir,
 		p.WindSpeedMph,
 		p.WindDirection,
-		p.AirTempDegC,
+		p.AirTempDegF,
 		p.WaterTempDegC,
 		p.Precipitation,
 		p.CloudCoverage,

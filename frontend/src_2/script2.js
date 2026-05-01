@@ -115,7 +115,7 @@ function loadCurrentSurfConditions(spotId, spotName) {
   fetchSurfConditions(spotId).then((data) => {
     const swellHeight = metersToFeet(data.DomSwellHeightM).toFixed(1);
     const waterTemp = cToF(data.WaterTempDegC).toFixed(1);
-    const airTemp = cToF(data.AirTempDegC).toFixed(1);
+    const airTemp = data.AirTempDegF;
 
     DOM.contentMain.innerHTML = `
             <div class="current-conditions-parent">

@@ -69,8 +69,8 @@ func (h *Handler) getSurfSpots(c *gin.Context) {
 	surfSpots := []models.StaticSurfSpot{}
 
 	rows, err := h.DB.Query(`
-		SELECT id, name, latitude, longitude, city_id, nearest_buoy 
-		FROM surfspot 
+		SELECT id, name, latitude, longitude, city_id, nearest_buoy
+		FROM surfspot
 		WHERE city_id = $1
 		`, cityID)
 	if err != nil {
@@ -119,13 +119,13 @@ func (h *Handler) getSpotConditionsCurrent(c *gin.Context) {
 	err = h.DB.QueryRow(`
 		SELECT
 			id,
-			spot_id, 
-			recorded_at, 
-			dom_swell_height_m, 
+			spot_id,
+			recorded_at,
+			dom_swell_height_m,
 			dom_swell_dir,
 			wind_speed_mph,
 			wind_direction,
-			air_temp_deg_c,
+			air_temp_deg_f,
 			water_temp_deg_c,
 			precipitation,
 			cloud_coverage,
@@ -140,7 +140,7 @@ func (h *Handler) getSpotConditionsCurrent(c *gin.Context) {
 		&conditions.DomSwellDir,
 		&conditions.WindSpeedMph,
 		&conditions.WindDirection,
-		&conditions.AirTempDegC,
+		&conditions.AirTempDegF,
 		&conditions.WaterTempDegC,
 		&conditions.Precipitation,
 		&conditions.CloudCoverage,
