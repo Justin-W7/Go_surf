@@ -15,6 +15,7 @@ import (
 
 	"go_surf/backend/src/config"
 	"go_surf/backend/src/models"
+
 	//"go_surf/backend/src/processing"
 	"go_surf/backend/src/spacial"
 	//"go_surf/backend/src/utils"
@@ -24,7 +25,7 @@ import (
 
 // ConnectDatabase establishes a connection to the PostgreSQL database "surftest".
 func ConnectDatabase() *sql.DB {
-	connStr := "user=justin password=password dbname=surftest sslmode=disable"
+	connStr := "user=waffles password=1218superman dbname=surfdata sslmode=disable"
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -168,7 +169,7 @@ func UpdateSurfSpotTable(db *sql.DB) {
 
 	sqlStmnt, err := db.Prepare(`
 		INSERT INTO surfspot (id, name, latitude, longitude, city_id, break_type, orientation, nearest_buoy)
-		VALUES($1, $2, $3, $4, $5, $6, $7, $8)		
+		VALUES($1, $2, $3, $4, $5, $6, $7, $8)
 	`)
 	if err != nil {
 		log.Fatal(err)
@@ -228,7 +229,7 @@ func UpdateCitiesTable(db *sql.DB) error {
 
 	sqlStmnt, err := db.Prepare(`
 		INSERT INTO cities (id, name, latitude, longitude, country, state, county)
-		VALUES($1, $2, $3, $4, $5, $6, $7)		
+		VALUES($1, $2, $3, $4, $5, $6, $7)
 	`)
 	if err != nil {
 		log.Fatal(err)
@@ -385,8 +386,6 @@ func parseRTBuoyLine(line string, buoyID int) (*models.BuoyDataPoint, error) {
 	return p, nil
 }
 
-
-
 func insertBuoyData(db *sql.DB, p *models.BuoyDataPoint) error {
 	_, err := db.Exec(`
 			INSERT INTO real_time_buoy_data_points (
@@ -425,7 +424,7 @@ func insertBuoyData(db *sql.DB, p *models.BuoyDataPoint) error {
 	return nil
 }
 
-// THIS HAS BEEN REPLACED WITH UpdateRTWeatherData() located in rt_weather.go 
+// THIS HAS BEEN REPLACED WITH UpdateRTWeatherData() located in rt_weather.go
 //
 /*
 func UpdateRTWeatherTable(db *sql.DB) error {
@@ -571,11 +570,11 @@ func UpdateCurrentSurfConditions(db *sql.DB) error {
 	}
 
 	// Get all cities
-	cities, err := db.Query(`SELECT 
-				id, 
-				name, 
-				latitude, 
-				longitude 
+	cities, err := db.Query(`SELECT
+				id,
+				name,
+				latitude,
+				longitude
 			FROM cities`)
 	if err != nil {
 		return err
@@ -583,7 +582,7 @@ func UpdateCurrentSurfConditions(db *sql.DB) error {
 	defer cities.Close()
 
 	// Get all weather data
-	weather, err := db.Query(`SELECT 
+	weather, err := db.Query(`SELECT
 				city_id,
 				recorded_at,
 				wind_speed,
@@ -599,9 +598,9 @@ func UpdateCurrentSurfConditions(db *sql.DB) error {
 	defer weather.Close()
 
 	// Get all buoys
-	buoys, err := db.Query(`SELECT 
-				id, 
-				latitude, 
+	buoys, err := db.Query(`SELECT
+				id,
+				latitude,
 				longitude
 			FROM buoys`)
 	if err != nil {
@@ -610,7 +609,7 @@ func UpdateCurrentSurfConditions(db *sql.DB) error {
 	defer buoys.Close()
 
 	// Get data from all buoys
-	buoyData, err := db.Query(`SELECT 
+	buoyData, err := db.Query(`SELECT
 				buoy_id,
 				recorded_at,
 				waveh_m,

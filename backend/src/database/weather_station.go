@@ -1,24 +1,23 @@
 package database
 
 import (
-	"log"
-	"fmt"
 	"database/sql"
-	"math"
-	"go_surf/backend/src/models"
-	"go_surf/backend/src/config"
-	"go_surf/backend/src/processing"
+	"fmt"
 	"go_surf/backend/src/api"
+	"go_surf/backend/src/config"
+	"go_surf/backend/src/models"
+	"go_surf/backend/src/processing"
 	"go_surf/backend/src/spacial"
+	"log"
+	"math"
 )
 
 type city struct {
-	Id 			int
-	Latitude 	float64
-	Longitude 	float64
+	Id          int
+	Latitude    float64
+	Longitude   float64
 	WeatherData models.SpotWeather
 }
-
 
 // UpdateCityWeatherSationId() should only be run when
 // city weather station ids need to be updated, or when
@@ -59,34 +58,34 @@ func UpdateCityWeatherStationId(db *sql.DB) error {
 
 func resolveStationsForCity(c city) (string, error) {
 	url, err := buildNWSWeatherURL(config.NWSWeatherURL, c.Latitude, c.Longitude)
-		if err != nil {
-			return "", err
-		}
+	if err != nil {
+		return "", err
+	}
 
-		// Fetch weather data
-		rawData, err := api.FetchURL(url)
-		if err != nil {
-			return "", err
-		}
+	// Fetch weather data
+	rawData, err := api.FetchURL(url)
+	if err != nil {
+		return "", err
+	}
 
-		c.WeatherData, err = processing.ParseSpotWeather(rawData)
-		if err != nil {
-			return "", err
-		}
+	c.WeatherData, err = processing.ParseSpotWeather(rawData)
+	if err != nil {
+		return "", err
+	}
 
-		rawData, err = api.FetchURL(c.WeatherData.Properties.ObservationStations)
-		if err != nil {
-			return "", err
-		}
-		// parse raw data
-		oStations, err := processing.ParseWeatherObservationStations(rawData)
-		if err != nil {
-			return "", err
-		}
+	rawData, err = api.FetchURL(c.WeatherData.Properties.ObservationStations)
+	if err != nil {
+		return "", err
+	}
+	// parse raw data
+	oStations, err := processing.ParseWeatherObservationStations(rawData)
+	if err != nil {
+		return "", err
+	}
 
-		// find nearest city's nearest station.
-		stationId := findNearestStation(c, oStations)
-		return stationId, nil
+	// find nearest city's nearest station.
+	stationId := findNearestStation(c, oStations)
+	return stationId, nil
 }
 
 func buildNWSWeatherURL(aString string, num1 float64, num2 float64) (string, error) {
@@ -94,7 +93,7 @@ func buildNWSWeatherURL(aString string, num1 float64, num2 float64) (string, err
 }
 
 func findNearestStation(city city, oStations models.ObservationStationCollection) string {
-// out of all the features coordinates, find the one closest to city coordinates.
+	// out of all the features coordinates, find the one closest to city coordinates.
 	distance := math.MaxFloat64
 	var nearestStation string
 	var current float64
@@ -131,7 +130,6 @@ func insertToCitiesTable(m map[int]string, db *sql.DB) error {
 	}
 	query += ") AS v(id, station_id) WHERE c.id = v.id;"
 
-
 	_, err := db.Exec(query, args...)
 	if err != nil {
 		fmt.Println("db.Exec ERROR: ", err)
@@ -139,18 +137,3 @@ func insertToCitiesTable(m map[int]string, db *sql.DB) error {
 	}
 	return nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

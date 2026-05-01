@@ -47,7 +47,8 @@ CREATE TABLE public.cities (
     longitude double precision NOT NULL,
     country character varying(100) NOT NULL,
     state character varying(100) NOT NULL,
-    county character varying(100) NOT NULL
+    county character varying(100) NOT NULL,
+    weather_station TEXT NOT NULL
 );
 
 
@@ -307,4 +308,3 @@ ALTER TABLE ONLY public.real_time_buoy_data_points
 --
 
 \unrestrict LcjMXdp51hoC5tAr3xO21scEsK8teGhAWz2m64UCauQxR4BrOkUg6Yt0JBkavlo
-

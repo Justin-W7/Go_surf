@@ -1,13 +1,13 @@
 package database
 
 import (
-	"fmt"
-	"math"
 	"database/sql"
 	"encoding/json"
-	"go_surf/backend/src/config"
+	"fmt"
 	"go_surf/backend/src/api"
+	"go_surf/backend/src/config"
 	"go_surf/backend/src/utils"
+	"math"
 )
 
 type CurrentObservation struct {
@@ -15,12 +15,12 @@ type CurrentObservation struct {
 }
 
 type Properties struct {
-	Timestamp               string        `json:"timestamp"`
-	Temperature             Value         `json:"temperature"`
-	WindSpeed               Value         `json:"windSpeed"`
-	WindDirection           Value         `json:"windDirection"`
-	PrecipitationLastHour   Value         `json:"precipitationLastHour"`
-	CloudLayers             []CloudLayer  `json:"cloudLayers"`
+	Timestamp             string       `json:"timestamp"`
+	Temperature           Value        `json:"temperature"`
+	WindSpeed             Value        `json:"windSpeed"`
+	WindDirection         Value        `json:"windDirection"`
+	PrecipitationLastHour Value        `json:"precipitationLastHour"`
+	CloudLayers           []CloudLayer `json:"cloudLayers"`
 }
 
 type Value struct {
@@ -32,25 +32,12 @@ type CloudLayer struct {
 }
 
 func UpdateRTWeatherData(db *sql.DB) error {
-	rows, err := db.Query(`SELECT id, weather_station FROM cities;`)
+	m, err := getCityStations(db)
 	if err != nil {
-		return fmt.Errorf("Error querying cities table: %w", err)
-	}
-	defer rows.Close()
-
-	var id int
-	var station string
-	m := make(map[int]string)
-
-	for rows.Next() {
-		err := rows.Scan(&id, &station)
-		if err != nil {
-			return err
-		}
-		m[id] = station
+		return fmt.Errorf("Error building map in getCities: %w", err)
 	}
 
-	urlMap, err := buildUrls(m) 
+	urlMap, err := buildUrls(m)
 	if err != nil {
 		return fmt.Errorf("Error buildUrls() for realtime weather: %w", err)
 	}
@@ -69,14 +56,35 @@ func UpdateRTWeatherData(db *sql.DB) error {
 
 	if err := updateRTWeatherTable(idObservationMap, db); err != nil {
 		return fmt.Errorf("Error insertRTDataToTable() for realtime weather: %w", err)
-	}	
+	}
 
 	return nil
 }
 
+func getCityStations(db *sql.DB) (map[int]string, error) {
+	rows, err := db.Query(`SELECT id, weather_station FROM cities;`)
+	if err != nil {
+		return make(map[int]string), fmt.Errorf("Error querying cities table: %w", err)
+	}
+	defer rows.Close()
+
+	var id int
+	var station string
+	m := make(map[int]string)
+
+	for rows.Next() {
+		err := rows.Scan(&id, &station)
+		if err != nil {
+			return make(map[int]string), err
+		}
+		m[id] = station
+	}
+	return m, nil
+}
+
 func buildUrls(m map[int]string) (map[int]string, error) {
 	if len(m) == 0 {
-		return m, nil
+		return make(map[int]string), nil
 	}
 
 	urls := make(map[int]string)
@@ -99,7 +107,7 @@ func buildRawDataMap(m map[int]string) (map[int][]byte, error) {
 			fmt.Printf("fetch failed for %d: %v\n", key, err)
 			continue
 		}
-		
+
 		rawDataMap[key] = data
 	}
 	return rawDataMap, nil
@@ -107,7 +115,7 @@ func buildRawDataMap(m map[int]string) (map[int][]byte, error) {
 
 func buildCurrentObservationStructs(m map[int][]byte) (map[int]CurrentObservation, error) {
 	if len(m) == 0 {
-		return nil, nil
+		return make(map[int]CurrentObservation), nil
 	}
 
 	observationMap := make(map[int]CurrentObservation)
@@ -168,11 +176,11 @@ func updateRTWeatherTable(m map[int]CurrentObservation, db *sql.DB) error {
 		}
 
 		// correct values - c to f
-		var t any
-		var temperatureF any
+		var t float64
+		var temperatureF float64
 		if props.Temperature.Value != nil {
 			t = math.Round(utils.CelsiusToFahrenheit(*props.Temperature.Value))
-			temperatureF = &t
+			temperatureF = t
 		}
 
 		var w any
@@ -182,16 +190,15 @@ func updateRTWeatherTable(m map[int]CurrentObservation, db *sql.DB) error {
 			windSpeed = &w
 		}
 
-
 		_, err := stmnt.Exec(
 			CityId,
-			props.Timestamp,                      // recorded_at
+			props.Timestamp, // recorded_at
 			windSpeed,
 			props.WindDirection.Value,
 			temperatureF,
 			props.PrecipitationLastHour.Value,
 			cloud,
-			props.Timestamp, 					  // observed_at (same for now)
+			props.Timestamp, // observed_at (same for now)
 		)
 
 		if err != nil {
@@ -200,10 +207,3 @@ func updateRTWeatherTable(m map[int]CurrentObservation, db *sql.DB) error {
 	}
 	return nil
 }
-
-
-
-
-
-
-

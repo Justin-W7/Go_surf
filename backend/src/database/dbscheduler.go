@@ -39,7 +39,6 @@ func tickerRunner(interval time.Duration, job func()) {
 	for range ticker.C {
 		job()
 	}
-
 }
 
 func updateBuoyData(db *sql.DB) error {
