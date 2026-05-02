@@ -108,7 +108,7 @@ CREATE TABLE public.current_weather (
     recorded_at timestamp with time zone NOT NULL,
     wind_speed text,
     wind_direction character varying(10),
-    air_temp_c double precision,
+    air_temp double precision,
     precipitation double precision,
     cloud_coverage text,
     observed_at timestamp with time zone NOT NULL
