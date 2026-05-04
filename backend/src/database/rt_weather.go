@@ -189,7 +189,6 @@ func updateRTWeatherTable(m map[int]CurrentObservation, db *sql.DB) error {
 			w = math.Round(utils.KphToMph(*props.WindSpeed.Value))
 			windSpeed = &w
 		}
-
 		_, err := stmnt.Exec(
 			CityId,
 			props.Timestamp, // recorded_at

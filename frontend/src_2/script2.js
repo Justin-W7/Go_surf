@@ -6,6 +6,15 @@ const state = {
   cities: [],
 };
 
+const cloudDict = {
+  FEW: "mostly clear",
+  SCT: "scattered clouds",
+  BKN: "mostly cloudy",
+  OVC: "overcast",
+  SKC: "clear",
+  CLR: "clear",
+};
+
 // DOM selectors ------------------------------------------
 const DOM = {
   contentHeader: document.querySelector(".content-header"),
@@ -70,7 +79,7 @@ function fetchSurfConditions(spotId) {
 // RENDER -------------------------------------------------
 function renderCitiesList(cities) {
   DOM.sidebarContent.innerHTML = "";
-
+  cities.sort();
   cities.forEach((city) => {
     const button = document.createElement("button");
     button.className = "city-button";
@@ -113,9 +122,17 @@ function loadSurfSpots(cityId) {
 
 function loadCurrentSurfConditions(spotId, spotName) {
   fetchSurfConditions(spotId).then((data) => {
-    const swellHeight = metersToFeet(data.DomSwellHeightM).toFixed(1);
-    const waterTemp = cToF(data.WaterTempDegC).toFixed(1);
-    const airTemp = data.AirTempDegF;
+    var swellHeight = display(metersToFeet(data.DomSwellHeightM).toFixed(1));
+    var waterTemp = display(cToF(data.WaterTempDegC).toFixed(1));
+    var airTemp = display(data.AirTempDegF);
+    var windSpeed = display(data.WindSpeedMph);
+    var windDir = display(degreesToCardinal(data.WindDirection));
+    var cloudCoverage = cloudCoverageDescription(data.CloudCoverage);
+
+    var precipitation = display(data.Precipitation);
+    if (precipitation != "NA") {
+      precipitation = precipitation + "%";
+    }
 
     DOM.contentMain.innerHTML = `
             <div class="current-conditions-parent">
@@ -142,9 +159,9 @@ function loadCurrentSurfConditions(spotId, spotName) {
                             </div>
                             <div class="content-right-data">
                                 <p>Air Temp: ${airTemp}°</p>
-                                <p>Wind: ${data.WindSpeedMph} - ${data.WindDirection}</p>
-                                <p>Cloud Coverage: ${data.CloudCoverage}</p>
-                                <p>Precipitation: ${data.Precipitation}%</p>
+                                <p>Wind: ${windSpeed} mph - ${windDir}</p>
+                                <p>Cloud Coverage: ${cloudCoverage}</p>
+                                <p>Precipitation: ${precipitation}</p>
                             </div>
                         </div>
                     </div>
@@ -170,6 +187,28 @@ function cToF(c) {
 
 function metersToFeet(m) {
   return m * 3.28084;
+}
+
+function display(value) {
+  if (value === null || value === "") {
+    return "NA";
+  } else {
+    return value;
+  }
+}
+
+function cloudCoverageDescription(key) {
+  return cloudDict[key] || "NA";
+}
+
+function degreesToCardinal(deg) {
+  if (deg === null) {
+    return null;
+  } else {
+    var directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+    var index = Math.round((deg / 45) % 8);
+    return directions[index];
+  }
 }
 
 // INIT -------------------------------------------------
