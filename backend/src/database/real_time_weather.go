@@ -49,12 +49,12 @@ func UpdateRTWeatherData(db *sql.DB) error {
 	}
 
 	// parse data into structs
-	idObservationMap, err := buildCurrentObservationStructs(rawDataMap)
+	ObservationMapById, err := buildCurrentObservationStructs(rawDataMap)
 	if err != nil {
 		return fmt.Errorf("Error buildCurrentObservationStructs() for realtime weather: %w", err)
 	}
 
-	if err := updateRTWeatherTable(idObservationMap, db); err != nil {
+	if err := updateRTWeatherTable(ObservationMapById, db); err != nil {
 		return fmt.Errorf("Error insertRTDataToTable() for realtime weather: %w", err)
 	}
 

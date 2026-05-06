@@ -424,7 +424,7 @@ func insertBuoyData(db *sql.DB, p *models.BuoyDataPoint) error {
 	return nil
 }
 
-// THIS HAS BEEN REPLACED WITH UpdateRTWeatherData() located in rt_weather.go
+// THIS HAS BEEN REPLACED WITH UpdateRTWeatherData() located in real_time_weather.go
 //
 /*
 func UpdateRTWeatherTable(db *sql.DB) error {

@@ -156,8 +156,7 @@ func ParseHourlyWeatherForecast(data []byte) (models.HourlyWeatherForecast, erro
 func ParseWeatherObservationStations(data []byte) (models.ObservationStationCollection, error) {
 	var observationStations models.ObservationStationCollection
 	if err := json.Unmarshal(data, &observationStations); err != nil {
-		fmt.Errorf("Could not unmarshal ObservationStationCollection: %w", err)
-		return models.ObservationStationCollection{}, err
+		return models.ObservationStationCollection{}, fmt.Errorf("Could not unmarshal ObservationStationCollection: %w", err)
 	}
 	return observationStations, nil
 }

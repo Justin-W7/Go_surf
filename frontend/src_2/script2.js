@@ -159,7 +159,7 @@ function loadCurrentSurfConditions(spotId, spotName) {
                             </div>
                             <div class="content-right-data">
                                 <p>Air Temp: ${airTemp}°</p>
-                                <p>Wind: ${windSpeed} mph - ${windDir}</p>
+                                <p>Wind: ${windSpeed} mph - (${windDir})</p>
                                 <p>Cloud Coverage: ${cloudCoverage}</p>
                                 <p>Precipitation: ${precipitation}</p>
                             </div>
