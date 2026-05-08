@@ -32,7 +32,7 @@ type CloudLayer struct {
 }
 
 func UpdateRTWeatherData(db *sql.DB) error {
-	m, err := getCityStations(db)
+	m, err := getCityStationsMap(db)
 	if err != nil {
 		return fmt.Errorf("Error building map in getCities: %w", err)
 	}
@@ -61,7 +61,7 @@ func UpdateRTWeatherData(db *sql.DB) error {
 	return nil
 }
 
-func getCityStations(db *sql.DB) (map[int]string, error) {
+func getCityStationsMap(db *sql.DB) (map[int]string, error) {
 	rows, err := db.Query(`SELECT id, weather_station FROM cities;`)
 	if err != nil {
 		return make(map[int]string), fmt.Errorf("Error querying cities table: %w", err)
@@ -107,7 +107,6 @@ func buildRawDataMap(m map[int]string) (map[int][]byte, error) {
 			fmt.Printf("fetch failed for %d: %v\n", key, err)
 			continue
 		}
-
 		rawDataMap[key] = data
 	}
 	return rawDataMap, nil

@@ -174,7 +174,7 @@ func StartRouter(db *sql.DB) {
 	router.GET("/surfspots/:cityID", h.getSurfSpots)
 	router.GET("/surfforecast/current/:spotID", h.getSpotConditionsCurrent)
 
-	router.Static("/gosurf", "./frontend/src_2")
+	router.Static("/gosurf", "./frontend/src")
 
 	router.Run(":8080")
 }
