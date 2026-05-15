@@ -1,11 +1,15 @@
 package meteo
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -85,7 +89,7 @@ func (s *service) get(ctx context.Context, id string) ([]byte, error) {
 	return io.ReadAll(resp.Body)
 }
 
-type BouyObservation struct {
+type bouyObservation struct {
 	BuoyID                int
 	RecordedAt            time.Time
 	WindDirectionDegT     *float64
@@ -106,12 +110,61 @@ func (s *RTBouyService) getData(ctx context.Context, bouyId string) ([]byte, err
 }
 
 // parseBouyObservation takes raw data as a byte slice that
-// is returned by a get() method and parses the json into a
-// BouyObservation struct. It returns a WeatherObservation struct and an error.
-func (s *RTBouyService) parseBuoyObservation(data []byte) (BouyObservation, error) {
-	var obs BouyObservation
-	if err := json.Unmarshal(data, &obs); err != nil {
-		return BouyObservation{}, err
+// is returned by a get() method and parses the data into a
+// BouyObservation struct. It returns a pointer to a bouyObservation struct and an error.
+func (s *RTBouyService) parseBuoyObservation(data []byte, bouyId string) (*bouyObservation, error) {
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+	var obs *bouyObservation
+
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		fields := strings.Fields(line)
+
+		// Format time.
+		timeLayout := "2006 01 02 15 04"
+		timestamp, err := time.Parse(timeLayout, strings.Join(fields[:5], " "))
+		if err != nil {
+			return &bouyObservation{}, err
+		}
+
+		// bouyId convert to string
+		id, err := strconv.Atoi(bouyId)
+		if err != nil {
+			return &bouyObservation{}, err
+		}
+
+		// safely parse datatypes
+		windDirection, _ := parseDataFloat(fields[5])
+		windSpeed, _ := parseDataFloat(fields[6])
+		windGust, _ := parseDataFloat(fields[7])
+		waveHeightM, _ := parseDataFloat(fields[8])
+		dominantWavePeriod, _ := parseDataFloat(fields[9])
+		avgWavePeriod, _ := parseDataFloat(fields[10])
+		meanWaveDirection, _ := parseDataFloat(fields[11])
+		airTemperature, _ := parseDataFloat(fields[13])
+		waterTemperature, _ := parseDataFloat(fields[14])
+
+		// build BouyObservation
+		obs = &bouyObservation{
+			BuoyID:                id,
+			RecordedAt:            timestamp,
+			WindDirectionDegT:     windDirection,
+			WindSpeedMetersPerSec: windSpeed,
+			WindGustMetersPerSec:  windGust,
+			WaveHeightM:           waveHeightM,
+			DominantWavePeriodSec: dominantWavePeriod,
+			AvgWavePeriodSec:      avgWavePeriod,
+			MeanWaveDirectionDegT: meanWaveDirection,
+			AirTempDegC:           airTemperature,
+			WaterTempDegC:         waterTemperature,
+			InsertedAt:            time.Now().UTC(),
+		}
+		break
 	}
 	return obs, nil
 }
@@ -119,23 +172,23 @@ func (s *RTBouyService) parseBuoyObservation(data []byte) (BouyObservation, erro
 // GetObservation takes context.Context and a string.
 // It returns parsed JSON of the bouy observation in the format
 // acceptable to the databse.
-func (s *RTBouyService) GetObservation(ctx context.Context, bouyId string) (BouyObservation, error) {
+func (s *RTBouyService) GetObservation(ctx context.Context, bouyId string) (*bouyObservation, error) {
 	data, err := s.getData(ctx, bouyId)
 	if err != nil {
-		return BouyObservation{}, err
+		return &bouyObservation{}, err
 	}
-	obs, err := s.parseBuoyObservation(data)
+	obs, err := s.parseBuoyObservation(data, bouyId)
 	if err != nil {
-		return BouyObservation{}, err
+		return &bouyObservation{}, err
 	}
 	return obs, nil
 }
 
-type WeatherObservation struct {
-	Properties Properties `json:"properties"`
+type weatherObservation struct {
+	Properties properties `json:"properties"`
 }
 
-type Properties struct {
+type properties struct {
 	Timestamp            string       `josn:"timestamp"`
 	Temperature          Value        `json:"temperature"`
 	WindSpeed            Value        `json:"windSpeed"`
@@ -161,10 +214,10 @@ func (s *RTWeatherService) getData(ctx context.Context, stationId string) ([]byt
 // parseWeatherObservation takes raw data as a byte slice that
 // is returned by a get() method and parses the json into a
 // WeatherObservation struct. It returns a WeatherObservation struct and an error.
-func parseWeatherObservation(data []byte) (WeatherObservation, error) {
-	var obs WeatherObservation
+func parseWeatherObservation(data []byte) (weatherObservation, error) {
+	var obs weatherObservation
 	if err := json.Unmarshal(data, &obs); err != nil {
-		return WeatherObservation{}, err
+		return weatherObservation{}, err
 	}
 	return obs, nil
 }
@@ -172,14 +225,30 @@ func parseWeatherObservation(data []byte) (WeatherObservation, error) {
 // GetObservation takes context.Context and a string.
 // It returns parsed JSON of the weather observation in the format
 // acceptable to the databse.
-func (s *RTWeatherService) GetObservation(ctx context.Context, stationId string) (WeatherObservation, error) {
+func (s *RTWeatherService) GetObservation(ctx context.Context, stationId string) (weatherObservation, error) {
 	data, err := s.getData(ctx, stationId)
 	if err != nil {
-		return WeatherObservation{}, err
+		return weatherObservation{}, err
 	}
 	obs, err := parseWeatherObservation(data)
 	if err != nil {
-		return WeatherObservation{}, err
+		return weatherObservation{}, err
 	}
 	return obs, err
+}
+
+// UTILITY FUNCTIONS
+// parseDataFloat returns pointer. Enables data point to return multiple states.
+// Allows for a number, a missing value ("MM") or nil which are all
+// valid values for the dataset.
+func parseDataFloat(value string) (*float64, error) {
+	if value == "MM" {
+		return nil, nil
+	}
+
+	result, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
