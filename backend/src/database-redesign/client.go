@@ -85,9 +85,50 @@ func (s *service) get(ctx context.Context, id string) ([]byte, error) {
 	return io.ReadAll(resp.Body)
 }
 
+type BouyObservation struct {
+	BuoyID                int
+	RecordedAt            time.Time
+	WindDirectionDegT     *float64
+	WindSpeedMetersPerSec *float64
+	WindGustMetersPerSec  *float64
+	WaveHeightM           *float64
+	DominantWavePeriodSec *float64
+	AvgWavePeriodSec      *float64
+	MeanWaveDirectionDegT *float64
+	AirTempDegC           *float64
+	WaterTempDegC         *float64
+	InsertedAt            time.Time
+}
+
 // getData wraps get() for the client.RTBouyService type.
 func (s *RTBouyService) getData(ctx context.Context, bouyId string) ([]byte, error) {
 	return s.get(ctx, bouyId)
+}
+
+// parseBouyObservation takes raw data as a byte slice that
+// is returned by a get() method and parses the json into a
+// BouyObservation struct. It returns a WeatherObservation struct and an error.
+func (s *RTBouyService) parseBuoyObservation(data []byte) (BouyObservation, error) {
+	var obs BouyObservation
+	if err := json.Unmarshal(data, &obs); err != nil {
+		return BouyObservation{}, err
+	}
+	return obs, nil
+}
+
+// GetObservation takes context.Context and a string.
+// It returns parsed JSON of the bouy observation in the format
+// acceptable to the databse.
+func (s *RTBouyService) GetObservation(ctx context.Context, bouyId string) (BouyObservation, error) {
+	data, err := s.getData(ctx, bouyId)
+	if err != nil {
+		return BouyObservation{}, err
+	}
+	obs, err := s.parseBuoyObservation(data)
+	if err != nil {
+		return BouyObservation{}, err
+	}
+	return obs, nil
 }
 
 type WeatherObservation struct {
@@ -111,21 +152,21 @@ type CloudLayer struct {
 	Amount string `json:"amount"`
 }
 
-// parseWeatherObservation takes raw data as a byte slice that
-// is returned by a get() method and parses the json into a
-// WeatherObservation struct. It returns a WeatherObservation struct and an error.
-func parseWeatherObservation(data []byte) (WeatherObservation, error) {
-	var observation WeatherObservation
-	if err := json.Unmarshal(data, &observation); err != nil {
-		return WeatherObservation{}, err
-	}
-	return observation, nil
-}
-
 // getData wraps get() for the client.RTWeatherService type.
 // Returns a slice of raw data and an error.
 func (s *RTWeatherService) getData(ctx context.Context, stationId string) ([]byte, error) {
 	return s.get(ctx, stationId)
+}
+
+// parseWeatherObservation takes raw data as a byte slice that
+// is returned by a get() method and parses the json into a
+// WeatherObservation struct. It returns a WeatherObservation struct and an error.
+func parseWeatherObservation(data []byte) (WeatherObservation, error) {
+	var obs WeatherObservation
+	if err := json.Unmarshal(data, &obs); err != nil {
+		return WeatherObservation{}, err
+	}
+	return obs, nil
 }
 
 // GetObservation takes context.Context and a string.
@@ -136,9 +177,9 @@ func (s *RTWeatherService) GetObservation(ctx context.Context, stationId string)
 	if err != nil {
 		return WeatherObservation{}, err
 	}
-	observation, err := parseWeatherObservation(data)
+	obs, err := parseWeatherObservation(data)
 	if err != nil {
 		return WeatherObservation{}, err
 	}
-	return observation, err
+	return obs, err
 }
