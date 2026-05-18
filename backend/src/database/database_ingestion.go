@@ -25,7 +25,7 @@ import (
 
 // ConnectDatabase establishes a connection to the PostgreSQL database "surftest".
 func ConnectDatabase() *sql.DB {
-	connStr := "user=waffles password=1218superman dbname=surfdata sslmode=disable"
+	connStr := "user=postgres password=pass dbname=surfdata sslmode=disable"
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
