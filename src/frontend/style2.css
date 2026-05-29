@@ -11,8 +11,7 @@ html {
 body {
     display: grid;
     height: 100vh;
-    grid-template-areas:
-        "rail sidebar content content content content";
+    grid-template-areas: "rail sidebar content content content content";
 
     grid-template-columns: 50px 1fr 1fr 1fr 1fr 1fr;
     gap: 10px;
@@ -23,10 +22,6 @@ body {
     /* font-family: Arial, Helvetica, sans-serif; */
     font-family: Inter;
 }
-
-
-
-
 
 /* Side rail menu */
 .rail {
@@ -57,6 +52,7 @@ body {
     flex: 1;
     flex-direction: column;
     justify-content: flex-end;
+
     align-items: center;
     padding: 5px;
 }
@@ -75,17 +71,13 @@ body {
     border-radius: 50%;
     box-shadow: 1px 1px 5px rgb(230, 230, 230);
 
-    transition-duration: .2s;
+    transition-duration: 0.2s;
 }
-
 
 .navbutton:hover {
     border: 1px solid var(--light-blue);
     box-shadow: 1px 1px 5px rgb(198, 204, 208);
 }
-
-
-
 
 /* Sidebar */
 .sidebar {
@@ -110,7 +102,7 @@ body {
     gap: 10px;
 }
 
-.searchbox input[type=text] {
+.searchbox input[type="text"] {
     border: 1px solid rgb(220, 220, 220);
     border-radius: 15px;
     padding: 5px;
@@ -136,20 +128,13 @@ body {
     width: fit-content;
     border-bottom: 1px solid white;
 
-    transition-duration: .2s;
+    transition-duration: 0.2s;
 }
 
 .sidebar-content .city-button:hover {
     color: var(--light-blue);
     border-bottom: 1px solid var(--line-blue);
 }
-
-
-
-
-
-
-
 
 /* Main content */
 .content {
@@ -201,7 +186,7 @@ body {
 
     font-size: 14px;
 
-    transition: all .2s ease;
+    transition: all 0.2s ease;
 }
 
 /*
@@ -214,7 +199,6 @@ body {
     color: var(--light-blue);
     border-bottom: 1px solid var(--line-blue);
 }
-
 
 .content-main {
     display: flex;
@@ -245,13 +229,8 @@ body {
     display: inline-block;
     white-space: nowrap;
 
-    transition: all .2s ease;
+    transition: all 0.2s ease;
 }
-
-
-
-
-
 
 /* CURRENT CONDITIONS */
 .current-conditions-parent {
@@ -315,7 +294,6 @@ body {
     border-bottom: 1px solid rgb(220, 220, 220);
 
     margin-bottom: 10px;
-
 }
 
 .content-left-data,

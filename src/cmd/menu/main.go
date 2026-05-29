@@ -23,7 +23,13 @@ func main() {
 	// instantiate context
 	ctx := context.Background()
 
-	// menu option to start application
+	meteo.StartRouter(dc.DB)
+
+	dbLib.StartDataIngestion(ctx, dc, api)
+
+}
+
+func mainMenu(ctx context.Context, dc *dbLib.DataClient, api *meteo.Client) {
 	input := ""
 	for {
 		fmt.Println("MAIN MENU")
