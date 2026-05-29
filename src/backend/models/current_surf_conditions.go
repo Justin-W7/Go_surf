@@ -15,6 +15,7 @@ type CurrentSurfSpotConditions struct {
 	Precipitation         *float64 // from city weather data
 	CloudCoverage         *string  // from city weather data
 	DominantWavePeriodSec *float64 // from buoy data
+	NearestBuoy           int
 }
 
 type Buoy struct {

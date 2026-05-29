@@ -129,7 +129,8 @@ func (h *Handler) getSpotConditionsCurrent(c *gin.Context) {
 			water_temp_deg_c,
 			precipitation,
 			cloud_coverage,
-			domwp_sec
+			domwp_sec,
+			nearest_buoy
 		FROM current_surf_spot_conditions
 		WHERE spot_id = $1
 	`, surfSpotID).Scan(
@@ -145,6 +146,7 @@ func (h *Handler) getSpotConditionsCurrent(c *gin.Context) {
 		&conditions.Precipitation,
 		&conditions.CloudCoverage,
 		&conditions.DominantWavePeriodSec,
+		&conditions.NearestBuoy,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {

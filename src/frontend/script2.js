@@ -116,7 +116,7 @@ function loadSurfSpots(cityId) {
     });
 
     // show first surfspot data
-    loadCurrentSurfConditions(data[0].id, data[0].name);
+    loadCurrentSurfConditions(data[0].id, data[0].name, data[0].buoyId);
   });
 }
 
@@ -133,6 +133,7 @@ function loadCurrentSurfConditions(spotId, spotName) {
     // if (precipitation != "NA") {
     //   precipitation = precipitation + "%";
     // }
+
     var swellHeight =
       data.DomSwellHeightM == null
         ? "NA"
@@ -163,7 +164,7 @@ function loadCurrentSurfConditions(spotId, spotName) {
                     <div class="conditions-content">
                         <div class="conditions-content-left">
                             <div class="conditions-content-left-title">
-                                Ocean Info
+                                Ocean Info - Buoy: ${data.NearestBuoy}
                             </div>
                             <div class="content-left-data">
                                 <p>Dominant swell: ${swellHeight} ft @ ${data.DominantWavePeriodSec} sec</p>

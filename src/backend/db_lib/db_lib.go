@@ -452,6 +452,7 @@ type CurrentSurfSpotConditions struct {
 	Precipitation         *float64 // from city weather data
 	CloudCoverage         *string  // from city weather data
 	DominantWavePeriodSec *float64 // from buoy data
+	BuoyId                int
 }
 
 func (c *DataClient) UpdateCurrentSurfConditions(api *meteo.Client) {
@@ -494,9 +495,10 @@ func (c *DataClient) insertCurrentSurfConditions(data CurrentSurfSpotConditions)
 		water_temp_deg_c,
 		precipitation,
 		cloud_coverage,
-		domwp_sec
+		domwp_sec,
+		nearest_buoy
 		)
-		VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 	`)
 	if err != nil {
 		return fmt.Errorf("could not prepare statment %w", err)
@@ -515,6 +517,7 @@ func (c *DataClient) insertCurrentSurfConditions(data CurrentSurfSpotConditions)
 		data.Precipitation,
 		data.CloudCoverage,
 		data.DominantWavePeriodSec,
+		data.BuoyId,
 	)
 	if err != nil {
 		return err
@@ -529,12 +532,13 @@ func (c *DataClient) buildCurrentConditions(surfSpots []surfSpot) ([]CurrentSurf
 	for _, surfSpot := range surfSpots {
 		// for each surfspot, get all the correlating data to build a current surf spot conditions struct.
 		conditions.SpotId = surfSpot.ID
+		conditions.BuoyId = surfSpot.NearestBuoy
 		buoyQuery := `
 	 		SELECT recorded_at, waveh_m, meanwavedir_degt, domwp_sec, watert_degc
 			FROM real_time_buoy_data_points
 			WHERE buoy_id = $1
 		`
-		// use surfSpot.NearestBuoy to get current buoy data data.
+		// use surfSpot.NearestBuoy to get current buoy data.
 		buoyData, err := c.DB.Query(buoyQuery, surfSpot.NearestBuoy)
 		if err != nil {
 			return nil, err
