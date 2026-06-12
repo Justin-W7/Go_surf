@@ -23,10 +23,10 @@ func main() {
 	// instantiate context
 	ctx := context.Background()
 
-	meteo.StartRouter(dc.DB)
-	dbLib.StartDataIngestion(ctx, dc, api)
+	// meteo.StartRouter(dc.DB)
+	// dbLib.StartDataIngestion(ctx, dc, api)
 
-	// mainMenu(ctx, dc, api)
+	mainMenu(ctx, dc, api)
 }
 
 func mainMenu(ctx context.Context, dc *dbLib.DataClient, api *meteo.Client) {

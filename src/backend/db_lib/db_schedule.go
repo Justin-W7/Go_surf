@@ -10,8 +10,6 @@ import (
 func StartDataIngestion(ctx context.Context, db *DataClient, api *meteo.Client) error {
 	fmt.Println("Starting data ingestion.")
 
-	fmt.Println("Starting data ingestion.")
-
 	go func() {
 		weatherReady := false
 
@@ -22,13 +20,14 @@ func StartDataIngestion(ctx context.Context, db *DataClient, api *meteo.Client) 
 		for {
 			now := time.Now()
 
-			// 1. Buoy
+			// 1. Buoy data
 			if now.After(nextBuoy) {
 				db.UpdateRTBuoyData(ctx, api)
+				fmt.Println("DataBase: updating current buoy data.")
 				nextBuoy = now.Add(15 * time.Minute)
 			}
 
-			// 2. Weather
+			// 2. Weather data
 			if now.After(nextWeather) {
 				db.UpdateRTWeatherData(ctx, api)
 				nextWeather = now.Add(time.Hour)

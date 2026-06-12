@@ -1,0 +1,31 @@
+########### TODO ######################
+[ ] Host MVP on the web.
+    - Run in docker container? Multiple docker containers that interact? How should this be structured?
+
+    * Organization:
+    - Deployment branch vs development branch?
+
+
+[ ] Add tides to forecasts.
+
+[ ] Implement weekly forecasts.
+    - Forecasts will be organized by day, up to seven days following the current date.
+
+    - [] Design structs for weekly forecasts.
+    - [] Desing psql database for weekly forecasts.
+
+
+[ ] Implement graphs and visualizers for swell, tide, and wind data.
+
+
+[ ] Implement users.
+    - Users can add information to their surf journal for tracking sessions.
+    - Journal entry by default includes the surf spot, the weather, and the current conditions.
+    - User gives their session a rating.
+
+    - Users can pick if they want to be notified of similar conditions for specified spots in the coming forecasts.
+        
+        Where will the be notified?
+        - notified by email?
+        - simple phone notification?
+        - personalized feed on user page?

@@ -55,7 +55,7 @@ DOM.homeButton.addEventListener("click", (e) => {
   resetHomeUI();
 });
 
-// API -------------------------------------------------
+// API server -------------------------------------------------
 function fetchCities() {
   fetch(`${API_BASE}/cities`)
     .then((res) => res.json())
