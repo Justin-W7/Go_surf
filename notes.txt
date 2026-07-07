@@ -7,6 +7,9 @@
 
 
 [ ] Add tides to forecasts.
+    X Download tide data tables for cities
+    - Build db table for tide data
+    - Link tide data to cities.
 
 [ ] Implement weekly forecasts.
     - Forecasts will be organized by day, up to seven days following the current date.

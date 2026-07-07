@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/csv"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"log"
@@ -15,6 +16,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -29,6 +31,8 @@ const (
 	dbSurfSpotList = "surfspots.csv"
 
 	rtBuoyDataURL = "https://www.ndbc.noaa.gov/data/realtime2/%s.txt"
+
+	tideDataDir = "tides"
 )
 
 type DataClient struct {
@@ -60,7 +64,6 @@ func (c *DataClient) Close() error {
 }
 
 func (c *DataClient) LoadStaticData() {
-
 	err := c.UpdateStaticCitiesTable()
 	if err != nil {
 		log.Println("Error: ", err)
@@ -243,6 +246,118 @@ func (c *DataClient) UpdateStaticSurfSpotTable() error {
 	return nil
 }
 
+// * Work backwards through these steps.
+// * This is per city / file.
+// 1. Load xml tide data file.
+// 2. Access the <data> tag.
+// 3. For each item, add to database.
+// 4. Convert the <date> tag to time.Date() format. (replace the "/" with "-".)
+// 5. Build tideDateItem.
+// 6. Add it to the cityXML struct for that city.
+// 7. Update the static tide db table for each cityXML.
+
+// cityXml is a data structure for parsing xml tide data into a usable format.
+type tideChartsXML struct {
+	XMLName     xml.Name       `xml:"datainfo"`
+	Origin      string         `xml:"origin"`
+	StationName string         `xml:"stationname"`
+	CountyName  string         `xml:"countyname"`
+	State       string         `xml:"state"`
+	BeginDate   string         `xml:"BeginDate"`
+	EndDate     string         `xml:"EndDate"`
+	TideData    []tideDataItem `xml:"data>item"`
+}
+
+type tideDataItem struct {
+	Date     string  `xml:"date"`
+	Day      string  `xml:"day"`
+	Time     string  `xml:"time"`
+	Heightft float64 `xml:"pred_in_ft"`
+	Highlow  string  `xml:"highlow"`
+}
+
+func parseXMLDateFmt(data string) string {
+	fmtData := strings.ReplaceAll(data, "/", "-")
+	return fmtData
+}
+
+func (c *DataClient) insertTideData(chart tideChartsXML) error {
+	sqlStmnt, err := c.DB.Prepare(`
+		INSERT INTO tide_data(
+			station_name,
+			county_name,
+			state_code,
+			measurement_date,
+			measurement_time,
+			water_level,
+			tidal_state
+		)
+		VALUES($1, $2, $3, $4, $5, $6, $7)
+	`)
+	if err != nil {
+		return fmt.Errorf("could not prepare statement: %w", err)
+	}
+	defer sqlStmnt.Close()
+
+	station_name := chart.StationName
+	county_name := chart.CountyName
+	state_code := chart.State
+	for _, entry := range chart.TideData {
+		_, err = sqlStmnt.Exec(
+			station_name,
+			county_name,
+			state_code,
+			entry.Date,
+			entry.Time,
+			entry.Heightft,
+			entry.Highlow,
+		)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *DataClient) UpdateStaticTideData() error {
+	// tideData
+	dataDir := data.FilePathBuilder(tideDataDir)
+	files, err := os.ReadDir(dataDir)
+	if err != nil {
+		return fmt.Errorf("failed to build directory path for tide data: %w", err)
+	}
+
+	var tideCharts []tideChartsXML
+	// loop through files
+	for _, file := range files {
+		fileName := file.Name()
+		path := filepath.Join(dataDir, fileName)
+		// read file
+		dataFile, err := os.ReadFile(path)
+		if err != nil {
+			return fmt.Errorf("failed to build file path for tide data xml path: %w", err)
+		}
+		var chart tideChartsXML
+		if err := xml.Unmarshal(dataFile, &chart); err != nil {
+			return fmt.Errorf("could not parse xml tide file: %w", err)
+		}
+		tideCharts = append(tideCharts, chart)
+	}
+
+	// clear table for new data.
+	_, err = c.DB.Exec(`TRUNCATE tide_data RESTART IDENTITY CASCADE`)
+	if err != nil {
+		fmt.Printf("could not truncate tide_data: %v", err)
+	}
+	for _, chart := range tideCharts {
+		if err := c.insertTideData(chart); err != nil {
+			fmt.Printf("error inserting tide data into table: %v", err)
+		}
+	}
+	fmt.Println("tide data insertion complete.")
+	return nil
+}
+
 func (c *DataClient) UpdateRTBuoyData(ctx context.Context, api *meteo.Client) error {
 	// read bouy ids from static buoy table
 	ids, err := c.GetBuoyIds()
@@ -250,7 +365,7 @@ func (c *DataClient) UpdateRTBuoyData(ctx context.Context, api *meteo.Client) er
 		return fmt.Errorf("could net get buoy ids: %w", err)
 	}
 
-	// Truncate table to clear for new data.
+	// Truncate table to prepare for new data.
 	_, err = c.DB.Exec(`TRUNCATE real_time_buoy_data_points`)
 	if err != nil {
 		return err
@@ -321,7 +436,7 @@ func (c *DataClient) insertRTBouyData(buoyId string, obs *meteo.BouyObservation)
 	return nil
 }
 
-// GetBuoyData returns all the static buoy table ids in a slice.
+// GetBuoyIds returns all the static buoy table ids in a slice.
 func (c *DataClient) GetBuoyIds() ([]int, error) {
 	rows, err := c.DB.Query(`SELECT id FROM buoys`)
 	if err != nil {
@@ -641,9 +756,15 @@ func (c *DataClient) GetSurfSpots() ([]surfSpot, error) {
 	return surfSpots, nil
 }
 
+type tidePrediction struct {
+	Time  time.Time
+	Value float32
+	Type  string
+}
+
 // UTILITY FUNCITONS
 
-// These functions may be used in other files within db_lib
+// These functions may be used in other files within dbLib
 func fetchURL(url string) ([]byte, error) {
 	response, err := http.Get(url)
 	if err != nil {
@@ -664,6 +785,7 @@ func KMHToMPH(kmh float64) float64 {
 
 /*
  TODOS:
+// Need to add tide data and tables.
 // Need to update forecasted data
 func UpdateForecastedBuoyData()    {}
 func UpdateForecastedWeatherData() {}

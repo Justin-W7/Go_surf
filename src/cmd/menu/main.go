@@ -34,7 +34,7 @@ func mainMenu(ctx context.Context, dc *dbLib.DataClient, api *meteo.Client) {
 	for {
 		fmt.Println("MAIN MENU")
 		fmt.Println()
-		fmt.Println("	(a) Start application")
+		fmt.Println("	(a) Start application - (starts data ingestion and router)")
 		fmt.Println("	(b) Start API server")
 		fmt.Println("	(c) Enter options menu")
 		fmt.Println()
@@ -46,6 +46,7 @@ func mainMenu(ctx context.Context, dc *dbLib.DataClient, api *meteo.Client) {
 		switch input {
 		case "a":
 			dbLib.StartDataIngestion(ctx, dc, api)
+			meteo.StartRouter(dc.DB)
 		case "b":
 			meteo.StartRouter(dc.DB)
 		case "c":
@@ -67,6 +68,7 @@ func optionsMenu(ctx context.Context, dc *dbLib.DataClient, api *meteo.Client) {
 		fmt.Println("	(b) Update real-time buoy data.")
 		fmt.Println("	(c) Update real-time weather data.")
 		fmt.Println("	(d) Update current surf condition data.")
+		fmt.Println(" 	(e) Test tide data pipeline.")
 		fmt.Println()
 		fmt.Println("[q] Back")
 		fmt.Println()
@@ -83,6 +85,8 @@ func optionsMenu(ctx context.Context, dc *dbLib.DataClient, api *meteo.Client) {
 			dc.UpdateRTWeatherData(ctx, api)
 		case "d":
 			dc.UpdateCurrentSurfConditions(api)
+		case "e":
+			dc.UpdateStaticTideData()
 		}
 	}
 }

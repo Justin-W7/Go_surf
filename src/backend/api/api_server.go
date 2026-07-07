@@ -164,6 +164,38 @@ func (h *Handler) getSpotConditionsCurrent(c *gin.Context) {
 	c.JSON(http.StatusOK, conditions)
 }
 
+// getTideDatacurrent fetches and returns tidal information for all counties
+// given todays date.
+/* func (h *Handler) getTideDataCurrent(c *gin.Context) {
+	// get all of the tide data for today.
+	now := time.Now()
+	date := now.Format("2006-01-02")
+
+	var tidalChart models.TideData
+	var charts []models.TideData
+	err := h.DB.QueryRow(`
+		SELECT
+			county_name,
+			measurement_date,
+			measurement_time,
+			water_level,
+			tidal_state
+		FROM tide_data
+		WHERE measurement_date = %1
+		`, date).Scan(
+			&tidalChart.County,
+			&tidalChart.Date,
+			&tidalChart.Time,
+			&tidalChart.HeightFt,
+			&tidalChart.HighLow,
+		)
+	if err != nil {
+
+	}
+
+}
+*/
+
 // StartRouter - creates gin router with default middleware.
 // By default it serves on :8080 unless PORT variable is defined.
 func StartRouter(db *sql.DB) {

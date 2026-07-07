@@ -51,13 +51,13 @@ func StartDataIngestion(ctx context.Context, db *DataClient, api *meteo.Client) 
 
 // tickerRunner manages job execution timing.
 // Job runs once when tickerRunner is called,
-// then runs at time implementation.
-func tickerRunner(interval time.Duration, job func()) {
-	job()
-	ticker := time.NewTicker(interval)
-	defer ticker.Stop()
+// then runs again at time implementation.
+// func tickerRunner(interval time.Duration, job func()) {
+// 	job()
+// 	ticker := time.NewTicker(interval)
+// 	defer ticker.Stop()
 
-	for range ticker.C {
-		job()
-	}
-}
+// 	for range ticker.C {
+// 		job()
+// 	}
+// }
