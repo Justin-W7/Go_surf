@@ -12,10 +12,11 @@
 *.test
 
 # Project Files to NOT inlude in repo
-backend/src/credentials/credentials.go
-backend/src/database/raw_data/
+src/backend/data
 
 ToDos.txt
+notes.txt
+
 # Code coverage profiles and other test artifacts
 *.out
 coverage.*
