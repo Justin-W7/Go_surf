@@ -7,6 +7,7 @@
 	<producttype>Tide Prediction</producttype>
 	<stationname>NEWPORT BEACH, NEWPORT BAY ENTRANCE</stationname>
 	<countyname>Orange County</countyname>
+	<tideregion>2</tideregion>
 	<state>CA</state>
 	<stationid>9410580</stationid>
 	<stationtype>Harmonic</stationtype>

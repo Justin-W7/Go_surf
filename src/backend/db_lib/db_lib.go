@@ -196,8 +196,8 @@ func (c *DataClient) UpdateStaticCitiesTable() error {
 
 func (c *DataClient) UpdateStaticSurfSpotTable() error {
 	sqlStmnt, err := c.DB.Prepare(`
-			INSERT INTO surfspot (id, name, latitude, longitude, city_id, break_type, orientation, nearest_buoy)
-			VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+			INSERT INTO surfspot (id, name, latitude, longitude, city_id, break_type, orientation, nearest_buoy, tide_region_id)
+			VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
 		`)
 	if err != nil {
 		return err
@@ -237,7 +237,7 @@ func (c *DataClient) UpdateStaticSurfSpotTable() error {
 
 		nearestBuoy := spacial.NearestBuoy(lat, lon, c.DB)
 
-		_, err = sqlStmnt.Exec(id, record[1], lat, lon, city_id, record[5], orientation, nearestBuoy)
+		_, err = sqlStmnt.Exec(id, record[1], lat, lon, city_id, record[5], orientation, nearestBuoy, record[7])
 		if err != nil {
 			return fmt.Errorf("line %d: insert failed: %w", linenumber, err)
 		}
@@ -262,6 +262,7 @@ type tideChartsXML struct {
 	Origin      string         `xml:"origin"`
 	StationName string         `xml:"stationname"`
 	CountyName  string         `xml:"countyname"`
+	TideRegion  string         `xml:"tideregion"`
 	State       string         `xml:"state"`
 	BeginDate   string         `xml:"BeginDate"`
 	EndDate     string         `xml:"EndDate"`
@@ -290,9 +291,10 @@ func (c *DataClient) insertTideData(chart tideChartsXML) error {
 			measurement_date,
 			measurement_time,
 			water_level,
-			tidal_state
+			tidal_state,
+			tide_region
 		)
-		VALUES($1, $2, $3, $4, $5, $6, $7)
+		VALUES($1, $2, $3, $4, $5, $6, $7, $8)
 	`)
 	if err != nil {
 		return fmt.Errorf("could not prepare statement: %w", err)
@@ -302,6 +304,7 @@ func (c *DataClient) insertTideData(chart tideChartsXML) error {
 	station_name := chart.StationName
 	county_name := chart.CountyName
 	state_code := chart.State
+	region := chart.TideRegion
 	for _, entry := range chart.TideData {
 		_, err = sqlStmnt.Exec(
 			station_name,
@@ -311,6 +314,7 @@ func (c *DataClient) insertTideData(chart tideChartsXML) error {
 			entry.Time,
 			entry.Heightft,
 			entry.Highlow,
+			region,
 		)
 		if err != nil {
 			return err
