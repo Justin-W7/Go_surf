@@ -78,6 +78,12 @@ func (c *DataClient) LoadStaticData() {
 	if err != nil {
 		log.Println("Error: ", err)
 	}
+
+	err = c.UpdateStaticTideData()
+	if err != nil {
+		log.Println("Error: ", err)
+	}
+
 }
 
 func (c *DataClient) UpdateStaticBuoyTable() error {
@@ -735,10 +741,11 @@ type surfSpot struct {
 	Name        string
 	CityId      int
 	NearestBuoy int
+	TideRegion  int
 }
 
 func (c *DataClient) GetSurfSpots() ([]surfSpot, error) {
-	rows, err := c.DB.Query(`SELECT id, name, city_id, nearest_buoy FROM surfspot`)
+	rows, err := c.DB.Query(`SELECT id, name, city_id, nearest_buoy, tide_region_id FROM surfspot`)
 	if err != nil {
 		return nil, err
 	}
@@ -749,12 +756,13 @@ func (c *DataClient) GetSurfSpots() ([]surfSpot, error) {
 	var name string
 	var cityId int
 	var buoy int
+	var tide_region int
 
 	for rows.Next() {
-		if err := rows.Scan(&id, &name, &cityId, &buoy); err != nil {
+		if err := rows.Scan(&id, &name, &cityId, &buoy, &tide_region); err != nil {
 			return nil, err
 		}
-		surfSpot := surfSpot{id, name, cityId, buoy}
+		surfSpot := surfSpot{id, name, cityId, buoy, tide_region}
 		surfSpots = append(surfSpots, surfSpot)
 	}
 	return surfSpots, nil
@@ -764,6 +772,15 @@ type tidePrediction struct {
 	Time  time.Time
 	Value float32
 	Type  string
+}
+
+// GetCurrentSurfSpotTideData returns the current day's high and low tide predictions for the provided
+// surf spot.
+func (c *DataClient) GetCurrentSurfSpotTideData() ([]tidePrediction, error) {
+	now := time.Now().Format("2006-01-02")
+	fmt.Println(now)
+
+	return nil, nil
 }
 
 // UTILITY FUNCITONS

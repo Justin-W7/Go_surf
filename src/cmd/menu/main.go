@@ -68,7 +68,7 @@ func optionsMenu(ctx context.Context, dc *dbLib.DataClient, api *meteo.Client) {
 		fmt.Println("	(b) Update real-time buoy data.")
 		fmt.Println("	(c) Update real-time weather data.")
 		fmt.Println("	(d) Update current surf condition data.")
-		fmt.Println(" 	(e) Test tide data pipeline.")
+		fmt.Println(" 	(e) Update static tide data.")
 		fmt.Println()
 		fmt.Println("[q] Back")
 		fmt.Println()
